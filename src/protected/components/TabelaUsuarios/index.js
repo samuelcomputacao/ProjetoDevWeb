@@ -4,12 +4,16 @@ import {
     Col,
     Container,
     Badge,
-    Table,
     Button,
     ButtonToolbar,
+    Table
 } from 'react-bootstrap';
+
+
 function TabelaPedidos() {
     return (
+
+        
         <Row >
             <Table striped bordered hover>
                 <thead>
@@ -36,6 +40,7 @@ function TabelaPedidos() {
                 </tbody>
             </Table>
         </Row>
+        
     );
 }
 

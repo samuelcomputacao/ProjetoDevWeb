@@ -14,19 +14,24 @@ function TabelaHortalicas() {
                     <tr>
                         <th width="5%">Nº</th>
                         <th width="50%">Nome</th>
-                        <th width="20%">Valor</th>
-                        <th width="15%">Ações</th>
+                        <th width="10%">Categoria</th>
+                        <th width="10%">Classificação</th>
+                        <th width="5%">Valor</th>
+                        <th width="20%">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>1</td>
                         <td>Alface</td>
-                        <td>R$ 2,00</td>
+                        <td>Folhas</td>
+                        <td>5</td>
+                        <td>2,00</td>
                         <td>
                             <Col>
                                 <ButtonToolbar>
-                                    <Button variant="danger">excluir</Button>
+                                    <Button style={{margin:'2px'}} variant="primary">ver</Button>
+                                    <Button style={{margin:'2px'}} variant="danger">excluir</Button>
                                 </ButtonToolbar>
                             </Col>
                         </td>

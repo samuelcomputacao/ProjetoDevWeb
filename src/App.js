@@ -3,6 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Home from './protected/pages/Home';
 import {withRouter} from 'react-router-dom';
 import Rotas from './routes';
+import 'antd/dist/antd.css';
 function App() {
   return (
       <Rotas></Rotas>
