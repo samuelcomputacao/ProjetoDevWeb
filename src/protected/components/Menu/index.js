@@ -10,6 +10,7 @@ function Menu(){
                 <Nav className="mr-auto">
                     <Nav.Link href="/pedidos">Pedidos</Nav.Link>
                     <Nav.Link href="/usuarios">Usuarios</Nav.Link>
+                    <Nav.Link href="/hortalicas">Hortalicas</Nav.Link>
                 </Nav>
                 <Form inline>
                     <Button variant="light">Sair</Button>
