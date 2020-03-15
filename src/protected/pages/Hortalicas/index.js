@@ -1,20 +1,25 @@
 import React from 'react';
 import Menu from '../../components/Menu';
-import { Container,Breadcrumb } from 'react-bootstrap';
+import { Breadcrumb, Container } from 'react-bootstrap';
 import Titulo from '../../components/Titulo';
 import TabelaHortalicas from '../../components/TabelaHortalicas';
+import { Divider,Button } from 'antd';
+const {Item} = Breadcrumb;
 
 function Hortalicas() {
     return (
         <div>
-            <Menu></Menu>
+            <Menu />
             <Breadcrumb>
-                <Breadcrumb.Item href="/">Principal</Breadcrumb.Item>
-                <Breadcrumb.Item active>Hortaliças</Breadcrumb.Item>
+                <Item href="/">Principal</Item>
+                <Item active>Hortaliças</Item>
             </Breadcrumb>
             <Container>
-                <Titulo name='Hortaliças'/>
+                <Titulo name='Hortaliças' />
+                <Divider/>                
                 <TabelaHortalicas />
+                <Divider/>
+                <Button type='primary' href='/CadastroHortalicas'>Cadastrar</Button>
             </Container>
         </div>
     );

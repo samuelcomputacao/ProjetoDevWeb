@@ -1,42 +1,74 @@
 import React from 'react';
-import {
-    Row,
-    Col,
-    Container,
-    Badge,
-    Table,
-    Button,
-    ButtonToolbar,
-} from 'react-bootstrap';
+
+import { DeleteOutlined,SearchOutlined} from '@ant-design/icons';
+
+import './index.css';
+
+import { Table, Button } from 'antd';
+
 function TabelaPedidos() {
-    return (
-        <Row >
-            <Table striped bordered hover>
-                <thead>
-                    <tr>
-                        <th width="5%">Nº</th>
-                        <th width="50%">Cliente</th>
-                        <th width="20%">Data</th>
-                        <th width="15%">Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>Samuel Pereira de Vasconcelos</td>
-                        <td>11/04/2020</td>
-                        <td>
-                            <Col>
-                                <ButtonToolbar>
-                                    <Button variant="primary">Ver</Button>
-                                    <Button variant="danger">Negar</Button>
-                                </ButtonToolbar>
-                            </Col>
-                        </td>
-                    </tr>
-                </tbody>
-            </Table>
-        </Row>
+
+    const dataSource = [
+        {
+            numero: '1',
+            cliente: 'Samuel Vasconcelos',
+            data: '15/04/2020',
+        },
+        {
+            numero: '2',
+            cliente: 'Samuel Vasconcelos',
+            data: '15/04/2020',
+        },
+        {
+            numero: '3',
+            cliente: 'Samuel Vasconcelos',
+            data: '15/04/2020',
+        },
+    ];
+
+    const columns = [
+        {
+            title: 'Nº',
+            dataIndex: 'numero',
+            key: 'numero',
+
+        },
+        {
+            title: 'Cliente',
+            dataIndex: 'cliente',
+            key: 'cliente',
+        },
+        {
+            title: 'Data',
+            dataIndex: 'data',
+            key: 'data',
+        },
+        {
+            title: 'Ações',
+            dataIndex: 'acoes',
+            key: 'acoes',
+            render: _ => (
+                <span>
+                    <Button
+                        type='primary'
+                        style={{ marginLeft: '2px' }}
+                        icon={<SearchOutlined />}
+                    />
+                    <Button
+                        type='primary'
+                        style={{ marginLeft: '2px' }}
+                        danger
+                        icon={<DeleteOutlined />} 
+                        />
+                </span>
+            ),
+        },
+    ];
+
+
+
+    return (  
+        <Table dataSource={dataSource} columns={columns} className='Tabela' />   
     );
 }
 

@@ -1,47 +1,76 @@
 import React from 'react';
-import {
-    Row,
-    Col,
-    Container,
-    Badge,
-    Button,
-    ButtonToolbar,
-    Table
-} from 'react-bootstrap';
+
+import { DeleteOutlined,EditOutlined} from '@ant-design/icons';
+
+import './index.css';
+
+import { Table, Button } from 'antd';
+
+function TabelaUsuarios() {
+
+    const dataSource = [
+        {
+            key: '1',
+            nome: 'Samuel Vasconcelos',
+            funcao: 'Cliente',
+        },
+        {
+            key: '2',
+            nome: 'Samuel Vasconcelos',
+            funcao: 'Cliente',
+        },
+        {
+            key: '3',
+            nome: 'Samuel Vasconcelos',
+            funcao: 'Funcionario',
+        },
+    ];
+
+    const columns = [
+        {
+            title: 'Código',
+            dataIndex: 'key',
+            key: 'key',
+
+        },
+        {
+            title: 'Nome',
+            dataIndex: 'nome',
+            key: 'nome',
+        },
+        {
+            title: 'Função',
+            dataIndex: 'funcao',
+            key: 'funcao',
+        },
+        {
+            title: 'Ações',
+            dataIndex: 'acoes',
+            key: 'acoes',
+            render: _ => (
+                <span>
+                    <Button
+                        type='primary'
+                        style={{ marginLeft: '2px' }}
+                        
+                        icon={<EditOutlined />} 
+                    />
+                    <Button
+                        type='primary'
+                        style={{ marginLeft: '2px' }}
+                        danger
+                        icon={<DeleteOutlined />} 
+                    />
+                </span>
+            ),
+        },
+    ];
 
 
-function TabelaPedidos() {
-    return (
 
-        
-        <Row >
-            <Table striped bordered hover>
-                <thead>
-                    <tr>
-                        <th width="5%">Nº</th>
-                        <th width="50%">Cliente</th>
-                        <th width="20%">Tipo</th>
-                        <th width="15%">Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>Samuel Pereira de Vasconcelos</td>
-                        <td>Fornecedor</td>
-                        <td>
-                            <Col>
-                                <ButtonToolbar>
-                                    <Button variant="danger">excluir</Button>
-                                </ButtonToolbar>
-                            </Col>
-                        </td>
-                    </tr>
-                </tbody>
-            </Table>
-        </Row>
-        
+    return (  
+        <Table dataSource={dataSource} columns={columns} className='Tabela' />   
     );
 }
 
-export default TabelaPedidos;
+export default TabelaUsuarios;

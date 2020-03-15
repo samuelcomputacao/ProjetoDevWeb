@@ -1,44 +1,87 @@
 import React from 'react';
-import {
-    Row,
-    Col,
-    Table,
-    Button,
-    ButtonToolbar,
-} from 'react-bootstrap';
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import './index.css';
+import { Table, Button } from 'antd';
+
 function TabelaHortalicas() {
+    const dataSource = [
+        {
+            key: '1',
+            nome: 'Alface',
+            categoria: 'Folhas',
+            classificacao: '5',
+            valor: '2,00'
+        },
+        {
+            key: '2',
+            nome: 'Alface',
+            categoria: 'Folhas',
+            classificacao: '5',
+            valor: '2,00',
+        },
+        {
+            key: '3',
+            nome: 'Alface',
+            categoria: 'Folhas',
+            classificacao: '5',
+            valor: '2,00',
+        },
+    ];
+
+    const columns = [
+        {
+            title: 'Codigo',
+            dataIndex: 'key',
+            key:'key'
+
+        },
+        {
+            title: 'Nome',
+            dataIndex: 'nome',
+            key:'nome'
+        },
+        {
+            title: 'Categoria',
+            dataIndex: 'categoria',
+            key:'categoria'
+        },
+        {
+            title: 'Classificação',
+            dataIndex: 'classificacao',
+            key:'classificacao'
+
+        },
+        {
+            title: 'Valor',
+            dataIndex: 'valor',
+            key:'valor'
+        },
+
+        {
+            title: 'Ações',
+            dataIndex: 'acoes',
+            key:'acoes',
+            render: _ => (
+                <span>
+
+                    <Button
+                        type='primary'
+                        style={{ marginLeft: '2px' }}
+                        icon={<EditOutlined />}
+                    />
+                    <Button
+                        type='primary'
+                        style={{ marginLeft: '2px' }}
+                        danger
+                        icon={<DeleteOutlined />}
+                    />
+                </span>
+            ),
+        },
+    ];
+
     return (
-        <Row >
-            <Table striped bordered hover>
-                <thead>
-                    <tr>
-                        <th width="5%">Nº</th>
-                        <th width="50%">Nome</th>
-                        <th width="10%">Categoria</th>
-                        <th width="10%">Classificação</th>
-                        <th width="5%">Valor</th>
-                        <th width="20%">Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>Alface</td>
-                        <td>Folhas</td>
-                        <td>5</td>
-                        <td>2,00</td>
-                        <td>
-                            <Col>
-                                <ButtonToolbar>
-                                    <Button style={{margin:'2px'}} variant="primary">ver</Button>
-                                    <Button style={{margin:'2px'}} variant="danger">excluir</Button>
-                                </ButtonToolbar>
-                            </Col>
-                        </td>
-                    </tr>
-                </tbody>
-            </Table>
-        </Row>
+        <Table dataSource={dataSource} columns={columns} className='Tabela' />
     );
 }
 

@@ -4,7 +4,7 @@ import Home from './protected/pages/Home';
 import Pedidos from './protected/pages/Pedidos';
 import Usuarios from './protected/pages/Usuarios';
 import Hortalicas from './protected/pages/Hortalicas';
-
+import CadastroHortalicas from './protected/pages/Hortalicas/cadastro';
 function Rotas() {
     return (
         <Router>
@@ -13,6 +13,7 @@ function Rotas() {
                 <Route path="/pedidos" component={Pedidos} />
                 <Route path="/usuarios" component={Usuarios} />
                 <Route path="/hortalicas" component={Hortalicas} />
+                <Route xact path="/cadastroHortalicas" component={CadastroHortalicas} />
             </Switch>
         </Router>
     );
