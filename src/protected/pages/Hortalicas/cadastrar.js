@@ -17,7 +17,7 @@ import Titulo from '../../components/Titulo';
 const { Item } = Breadcrumb;
 
 
-function Cadastro() {
+function CadastroHortalica() {
   
     const [categorias, setCategorias] = useState(['Folhas', 'Temperos', 'Legumes', 'Raizes']);
     const [nome, setNome]  = useState('');
@@ -78,7 +78,8 @@ function Cadastro() {
             <Menu />
             <Breadcrumb>
                 <Item href="/">Principal</Item>
-                <Item active>Hortaliças</Item>
+                <Item href="/hortalicas">Hortaliças</Item>
+                <Item active >Cadastrar</Item>
             </Breadcrumb>
             <Container>
                 <Titulo name='Cadastro de Hortaliças' />
@@ -146,4 +147,4 @@ function Cadastro() {
     );
 }
 
-export default Cadastro;
+export default CadastroHortalica;

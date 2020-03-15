@@ -18,7 +18,7 @@ function Usuarios() {
                 <Divider/>
                 <TabelaUsuarios />
                 <Divider/>
-                <Button type='primary' href='/CadastroHortalicas'>Cadastrar</Button>
+                <Button type='primary' href='/cadastroUsuarios'>Cadastrar</Button>
             </Container>
 
         </div>
