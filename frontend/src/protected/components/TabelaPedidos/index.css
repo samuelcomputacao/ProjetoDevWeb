@@ -1,0 +1,9 @@
+.Tabela{
+    table-layout: auto;
+    width: 100%
+}
+
+.Button{
+    margin-left: '50px';
+    padding: '10px';
+}
