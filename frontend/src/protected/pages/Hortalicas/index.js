@@ -38,21 +38,21 @@ function Hortalicas() {
 
     const dataSource = [
         {
-            key: '1',
+            id: '1',
             nome: 'Alface',
             categoria: 'Folhas',
             classificacao: '5',
             valor: 3
         },
         {
-            key: '2',
+            id: '2',
             nome: 'Coentro',
             categoria: 'Folhas',
             classificacao: '5',
             valor: 2,
         },
         {
-            key: '3',
+            id: '3',
             nome: 'Cebola',
             categoria: 'Folhas',
             classificacao: '5',
@@ -62,7 +62,6 @@ function Hortalicas() {
     ];
     return (
         <div>
-            <Menu />
             <Breadcrumb>
                 <Item href="/">Principal</Item>
                 <Item active>Hortaliças</Item>

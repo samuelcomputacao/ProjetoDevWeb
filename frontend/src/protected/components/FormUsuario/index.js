@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import api from '../../../service/api';
+import { notificarErro, notificarSucesso } from '../Notificacao/index';
 import {
     Form,
     Input,
     Button,
     Select,
-    notification
 } from 'antd';
 
 function FormUsuario({ cod, update }) {
@@ -14,6 +15,8 @@ function FormUsuario({ cod, update }) {
     const [nome, setNome] = useState('');
     const [funcao, setFuncao] = useState('');
     const [cpfCnpj, setCpfCnpj] = useState('');
+    const [senha, setSenha] = useState('');
+    const [confirmSenha, setConfirmSenha] = useState('');
 
     const history = useHistory();
 
@@ -21,13 +24,34 @@ function FormUsuario({ cod, update }) {
         console.log('formChange');
     };
 
-    const onFinish = values => {
-        setNome(values.nome);
-        setFuncao(values.funcao);
-        setCpfCnpj(values.cpfCnpj);
-        openNotification();
-        setTimeout(redirect, 1000);
+    const onFinish = async (values) => {
+
+        const { nome, funcao, cpfCnpj, senha, confirmSenha } = values;
+
+        if (senha !== confirmSenha) {
+            notificarErro('As senhas não são iguais');
+        } else {
+
+            const usuario = {
+                nome,
+                funcao,
+                cpfCnpj,
+                senha
+            };
+
+            salvar(usuario);
+        }
     };
+
+    const salvar = async (usuario) => {
+        try{
+            await api.post('/usuario', { usuario });
+            openNotification();
+        }catch(e){
+           const {mensagem} = e.response.data;
+           notificarErro(mensagem);
+        }
+    }
 
     const onFinishFailed = errorInfo => {
         console.log('Failed:', errorInfo);
@@ -50,24 +74,11 @@ function FormUsuario({ cod, update }) {
 
     const openNotification = () => {
         if (update) {
-            notification.open({
-                message: 'Atualizado',
-                description:
-                    'O usuário foi atualizado com sucesso',
-                onClick: () => {
-                    console.log('Notification Clicked!');
-                },
-            });
-        }else{
-            notification.open({
-                message: 'Salvo',
-                description:
-                    'O usuário foi salvo com sucesso',
-                onClick: () => {
-                    console.log('Notification Clicked!');
-                },
-            });
+            notificarSucesso('O usuário foi atualizado com sucesso.');
+        } else {
+            notificarSucesso('O usuário foi salvo com sucesso.');
         }
+        setTimeout(redirect,2000);
     };
 
     const redirect = () => {
@@ -129,6 +140,31 @@ function FormUsuario({ cod, update }) {
                     }
                 </Select>
             </Form.Item>
+
+            <Form.Item
+                label='Senha'
+                name="senha"
+                rules={[
+                    {
+                        required: true,
+                        message: 'A senha é obrigatoria!'
+                    }]}
+            >
+                <Input.Password />
+            </Form.Item>
+
+            <Form.Item
+                label='Confirmação'
+                name="confirmSenha"
+                rules={[
+                    {
+                        required: true,
+                        message: 'A confirmação da senha é obrigatoria!'
+                    }]}
+            >
+                <Input.Password />
+            </Form.Item>
+
             <Form.Item {...tailLayout}>
                 {update &&
                     <Button

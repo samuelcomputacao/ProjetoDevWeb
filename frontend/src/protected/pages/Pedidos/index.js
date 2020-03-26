@@ -73,7 +73,6 @@ function Pedidos() {
 
     return (
         <div>
-            <Menu />
             <Breadcrumb>
                 <Item href="/">Principal</Item>
                 <Item active>Pedidos</Item>

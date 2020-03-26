@@ -1,13 +1,27 @@
-import React, { useState } from 'react';
-import { Table, Button,Input } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Button, Input ,Table} from 'antd';
 import Highlighter from 'react-highlight-words';
 import { SearchOutlined } from '@ant-design/icons';
+import api from '../../../service/api';
+import './index.css';
 
-function TabelaUsuarios({dataSource,acoes}) {
+function TabelaUsuarios({ dataSource, acoes }) {
 
-    const [searchText, setSearchText]  = useState('');
+    const [searchText, setSearchText] = useState('');
     const [searchedColumn, setSearchedColumn] = useState('');
-    
+    const [lista, setLista] = useState([]);
+    const [loadingTable,setLoadingTable] = useState(false);
+
+    useEffect(() => {
+        async function carregaUsuarios() {
+            setLoadingTable(true);
+            const { data } = await api.get('/usuario');
+            setLista(data);
+            setLoadingTable(false);
+        }
+        carregaUsuarios();
+    }, []);
+
 
     const getColumnSearchProps = dataIndex => ({
         filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
@@ -68,11 +82,10 @@ function TabelaUsuarios({dataSource,acoes}) {
     const columns = [
         {
             title: 'Código',
-            dataIndex: 'id',
-            key: 'id',
+            dataIndex: 'key',
+            key: 'key',
             defaultSortOrder: 'ascend',
-            sorter: (a, b) => a.id - b.id,
-
+            sorter: (a, b) => a.key - b.key,
         },
         {
             title: 'Nome',
@@ -91,12 +104,31 @@ function TabelaUsuarios({dataSource,acoes}) {
             defaultSortOrder: 'ascend',
             sorter: (a, b) => ((a.cpfCnpj > b.cpfCnpj) ? 1 : ((b.cpfCnpj > a.cpfCnpj) ? -1 : 0)),
         },
+        {
+            title: 'CpfCnpj',
+            dataIndex: 'cpfCnpj',
+            key: 'cpfCnpj',
+            defaultSortOrder: 'ascend',
+            sorter: (a, b) => ((a.cpfCnpj > b.cpfCnpj) ? 1 : ((b.cpfCnpj > a.cpfCnpj) ? -1 : 0)),
+        },
+        {
+            title: 'CpfCnpj',
+            dataIndex: 'cpfCnpj',
+            key: 'cpfCnpj',
+            defaultSortOrder: 'ascend',
+            sorter: (a, b) => ((a.cpfCnpj > b.cpfCnpj) ? 1 : ((b.cpfCnpj > a.cpfCnpj) ? -1 : 0)),
+        },
+        {
+            title: 'CpfCnpj',
+            dataIndex: 'cpfCnpj',
+            key: 'cpfCnpj',
+            defaultSortOrder: 'ascend',
+            sorter: (a, b) => ((a.cpfCnpj > b.cpfCnpj) ? 1 : ((b.cpfCnpj > a.cpfCnpj) ? -1 : 0)),
+        },
 
         {
             title: 'Função',
             dataIndex: 'funcao',
-            key: 'funcao',
-            fixed: 'left',
             filters: [
                 {
                     text: 'Funcionario',
@@ -112,8 +144,29 @@ function TabelaUsuarios({dataSource,acoes}) {
         acoes,
     ];
 
-    return (  
-        <Table dataSource={dataSource} columns={columns} className='Tabela' />   
+    return (
+             <Table dataSource={lista} columns={columns} className='Tabela' bordered loading={loadingTable}/>
+        // <Table striped bordered hover>
+        //     <thead>
+        //         <tr>
+        //             <th>Código</th>
+        //             <th>Nome</th>
+        //             <th>Cpf/Cnpj</th>
+        //             <th>Função</th>
+        //             <th>Opções</th>
+        //         </tr>
+        //     </thead>
+        //     <tbody>
+        //         {lista.map(u => (
+        //             <tr key={u.key}>
+        //                 <td>{u.key}</td>
+        //                 <td>{u.nome}</td>
+        //                 <td>{u.cpfCnpj}</td>
+        //                 <td>{u.funcao}</td>
+        //                 <td><button >click</button></td>
+        //             </tr>))}
+        //     </tbody>
+        // </Table>
     );
 }
 

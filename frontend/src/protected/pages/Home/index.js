@@ -10,7 +10,6 @@ const {Item} = Breadcrumb;
 function Home() {
     return (
         <div>
-            <Menu />
             <Breadcrumb>
                 <Item active="/">Dados Pessoais</Item>
             </Breadcrumb>
