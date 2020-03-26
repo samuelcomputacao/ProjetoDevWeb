@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useHistory } from 'react-router-dom';
 
 import {
@@ -19,11 +19,8 @@ const { Item } = Breadcrumb;
 
 function CadastroHortalica() {
   
-    const [categorias, setCategorias] = useState(['Folhas', 'Temperos', 'Legumes', 'Raizes']);
-    const [nome, setNome]  = useState('');
-    const [categoria, setCategoria] = useState('');
-    const [valor, setValor]  = useState(0);
-
+    const categorias = ['Folhas', 'Temperos', 'Legumes', 'Raizes'];
+  
     const history = useHistory();
 
     const onFormLayoutChange = ({ size }) => {
@@ -31,9 +28,7 @@ function CadastroHortalica() {
     };
 
     const onFinish = values => {
-       setNome(values.nome);
-       setCategoria(values.categoria);
-       setValor(values.valor);
+    
        openNotification();
        setTimeout(redirect, 1000);
     };

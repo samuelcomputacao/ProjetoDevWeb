@@ -7,6 +7,7 @@ import Hortalicas from './protected/pages/Hortalicas';
 import CadastroHortalicas from './protected/pages/Hortalicas/cadastrar';
 import CadastroUsuarios from './protected/pages/Usuarios/cadastrar';
 import CadastroPedidos from './protected/pages/Pedidos/cadastrar';
+import EditarUsuario from './protected/pages/Usuarios/editar';
 function Rotas() {
     return (
         <Router>
@@ -17,6 +18,7 @@ function Rotas() {
                 <Route path="/hortalicas" component={Hortalicas} />
                 <Route path="/cadastroHortalicas" component={CadastroHortalicas} />
                 <Route path="/cadastroUsuarios" component={CadastroUsuarios} />
+                <Route path="/editarUsuario" component={EditarUsuario}/> 
                 <Route path="/cadastroPedidos" component={CadastroPedidos} />
                 <Route path="/home" component={Home}/>
             </Switch>

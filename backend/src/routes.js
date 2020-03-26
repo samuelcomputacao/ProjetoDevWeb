@@ -12,8 +12,9 @@ routes.delete('/hortalica/:id',hortalicaController.delete);
 
 
 routes.get('/usuario',usuarioController.index);
+routes.get('/usuario/:key',usuarioController.findById);
 routes.post('/usuario',usuarioController.create);
-routes.delete('/usuario',usuarioController.delete);
+routes.delete('/usuario/:key',usuarioController.delete);
 routes.put('/usuario',usuarioController.update);
 
 module.exports = routes;

@@ -2,7 +2,7 @@ import React from 'react';
 
 import './index.css';
 
-import { Table, Button } from 'antd';
+import { Table } from 'antd';
 
 function TabelaPedidos({dataSource,acoes}) {
 

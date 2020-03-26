@@ -1,24 +1,64 @@
-import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import api from '../../../service/api';
+import React, { useState, useEffect } from 'react';
 import { notificarErro, notificarSucesso } from '../Notificacao/index';
+import api from '../../../service/api';
 import {
     Form,
-    Input,
     Button,
     Select,
+    Input
 } from 'antd';
+import { useHistory } from 'react-router-dom';
 
-function FormUsuario({ cod, update }) {
+function FormUsuario({ atualizar, location }) {
 
-    const [categorias, setCategorias] = useState(['Funcionario', 'Cliente']);
-    const [nome, setNome] = useState('');
-    const [funcao, setFuncao] = useState('');
-    const [cpfCnpj, setCpfCnpj] = useState('');
-    const [senha, setSenha] = useState('');
-    const [confirmSenha, setConfirmSenha] = useState('');
+    const [usuario, setUsuario] = useState({});
+    const [carregado, setCarregado] = useState(false);
 
+    const categorias = ['Funcionario', 'Cliente'];
     const history = useHistory();
+
+    useEffect(() => {
+        async function buscaUsuario() {
+            if (location) {
+                const params = new URLSearchParams(location.search);
+                const k = params.get('key');
+                try {
+                    const { data } = await api.get(`/usuario/${k}`);
+                    await setUsuario(data);
+                    await setCarregado(true);
+                } catch (e) {
+
+                }
+            }
+        }
+        buscaUsuario();
+    }, [location]);
+
+    const cadastrarUsuario = async (usuario) => {
+        try {
+            await api.post('/usuario', { usuario });
+            notificarSucesso('O usuário foi cadastrado com sucesso.');
+            setTimeout(() => {
+                history.push('/usuarios');
+            }, 200);
+        } catch (e) {
+            const { mensagem } = e.response.data;
+            notificarErro(mensagem);
+        }
+    }
+
+    const editarUsuario = async (usuario) => {
+        try {
+            await api.put('/usuario', { usuario });
+            notificarSucesso('O usuário foi atualizado com sucesso.');
+            setTimeout(() => {
+                history.push('/usuarios');
+            }, 200);
+        } catch (e) {
+            const { mensagem } = e.response.data;
+            notificarErro(mensagem);
+        }
+    }
 
     const onFormLayoutChange = ({ size }) => {
         console.log('formChange');
@@ -32,26 +72,32 @@ function FormUsuario({ cod, update }) {
             notificarErro('As senhas não são iguais');
         } else {
 
-            const usuario = {
+            const usuarioC = {
                 nome,
                 funcao,
                 cpfCnpj,
-                senha
+                senha,
             };
-
-            salvar(usuario);
+            cadastrarUsuario(usuarioC);
         }
     };
 
-    const salvar = async (usuario) => {
-        try{
-            await api.post('/usuario', { usuario });
-            openNotification();
-        }catch(e){
-           const {mensagem} = e.response.data;
-           notificarErro(mensagem);
+    const onFinishEdit = async (values) => {
+        const { nome, funcao, cpfCnpj, senha, confirmSenha } = values;
+        if (senha && senha !== confirmSenha) {
+            notificarErro('As senhas não são iguais');
+        } else {
+            if (nome && funcao && cpfCnpj) {
+                const usuarioEdit = {
+                    nome,
+                    funcao,
+                    cpfCnpj,
+                    senha,
+                };
+                editarUsuario(usuarioEdit);
+            }
         }
-    }
+    };
 
     const onFinishFailed = errorInfo => {
         console.log('Failed:', errorInfo);
@@ -71,128 +117,172 @@ function FormUsuario({ cod, update }) {
             span: 16,
         },
     };
+    if (carregado) {
+        return (
+            <div>
+                <Form
+                    {...layout}
+                    name="basic"
+                    initialValues={{
+                        remember: true,
+                        nome: usuario.nome,
+                        funcao: usuario.funcao,
+                        cpfCnpj: usuario.cpfCnpj
+                    }}
+                    onFinish={onFinishEdit}
+                    onFinishFailed={onFinishFailed}
+                    onValuesChange={onFormLayoutChange}
+                    size='larger'>
+                    <Form.Item
+                        label='Nome'
+                        name="nome">
+                        <Input />
+                    </Form.Item>
+                    <Form.Item
+                        label='Cpf/Cnpj'
+                        name="cpfCnpj"
 
-    const openNotification = () => {
-        if (update) {
-            notificarSucesso('O usuário foi atualizado com sucesso.');
-        } else {
-            notificarSucesso('O usuário foi salvo com sucesso.');
-        }
-        setTimeout(redirect,2000);
-    };
 
-    const redirect = () => {
-        history.goBack();
-    }
+                    >
+                        <Input readOnly />
+                    </Form.Item>
+                    <Form.Item
+                        label='Função'
+                        name="funcao"
 
-    const getAcao = () => {
-        let retorno = 'Salvar';
-        if (update) retorno = 'Atualizar';
-    }
+                    >
+                        <Select>
+                            {
+                                categorias.map((cat) => {
+                                    return (<Select.Option value={cat} key={cat}>{cat}</Select.Option>)
+                                })
+                            }
+                        </Select>
+                    </Form.Item>
 
-    return (
-        <Form
-            {...layout}
-            name="basic"
-            initialValues={{
-                remember: true,
-            }}
-            onFinish={onFinish}
-            onFinishFailed={onFinishFailed}
-            onValuesChange={onFormLayoutChange}
-            size='larger'>
-            <Form.Item
-                label='Nome'
-                name="nome"
-                rules={[
-                    {
-                        required: true,
-                        message: 'O nome é obrigatorio!'
-                    }]}
-            >
-                <Input />
-            </Form.Item>
-            <Form.Item
-                label='Cpf/Cnpj'
-                name="cpfCnpj"
-                rules={[
-                    {
-                        required: true,
-                        message: 'O CPF/Cnpj é obrigatorio!'
-                    }]}
-            >
-                <Input />
-            </Form.Item>
-            <Form.Item
-                label='Função'
-                name="funcao"
-                rules={[
-                    {
-                        required: true,
-                        message: 'A Função é obrigatoria!',
-                    }]}
-            >
-                <Select>
-                    {
-                        categorias.map((cat) => {
-                            return (<Select.Option value={cat} key={cat}>{cat}</Select.Option>)
-                        })
-                    }
-                </Select>
-            </Form.Item>
+                    <Form.Item
+                        label='Senha'
+                        name='senha'
+                    >
+                        <Input.Password />
+                    </Form.Item>
 
-            <Form.Item
-                label='Senha'
-                name="senha"
-                rules={[
-                    {
-                        required: true,
-                        message: 'A senha é obrigatoria!'
-                    }]}
-            >
-                <Input.Password />
-            </Form.Item>
+                    <Form.Item
+                        label='Confirmação'
+                        name="confirmSenha"
+                    >
+                        <Input.Password />
+                    </Form.Item>
 
-            <Form.Item
-                label='Confirmação'
-                name="confirmSenha"
-                rules={[
-                    {
-                        required: true,
-                        message: 'A confirmação da senha é obrigatoria!'
-                    }]}
-            >
-                <Input.Password />
-            </Form.Item>
+                    <Form.Item {...tailLayout}>
+                        <Button
+                            type="primary"
+                            htmlType="submit">
+                            Atualizar
+                        </Button>
 
-            <Form.Item {...tailLayout}>
-                {update &&
-                    <Button
-                        type="primary"
-                        htmlType="submit">
+                        <Button
+                            type="danger"
+                            href="/usuarios"
+                            style={{ marginLeft: '2px' }}
+                        >
+                            Cancelar
+                        </Button>
+                    </Form.Item>
+                </Form>
+            </div>);
+    } else {
 
-                        Atualizar
-                    </Button>
-                }
-                {!update &&
+        return (
+            <Form
+                {...layout}
+                name="basic"
+                initialValues={{ remember: true }}
+                onFinish={onFinish}
+                onFinishFailed={onFinishFailed}
+                onValuesChange={onFormLayoutChange}
+                size='larger'>
+                <Form.Item
+                    label='Nome'
+                    name="nome"
+                    rules={[
+                        {
+                            required: true,
+                            message: 'O nome é obrigatorio!'
+                        }]}
+                >
+                    <Input id='nomeId' />
+                </Form.Item>
+                <Form.Item
+                    label='Cpf/Cnpj'
+                    name="cpfCnpj"
+                    rules={[
+                        {
+                            required: true,
+                            message: 'O CPF/Cnpj é obrigatorio!'
+                        }]}
+                >
+                    <Input />
+                </Form.Item>
+                <Form.Item
+                    label='Função'
+                    name="funcao"
+                    rules={[
+                        {
+                            required: true,
+                            message: 'A Função é obrigatoria!',
+                        }]}
+                >
+                    <Select>
+                        {
+                            categorias.map((cat) => {
+                                return (<Select.Option value={cat} key={cat}>{cat}</Select.Option>)
+                            })
+                        }
+                    </Select>
+                </Form.Item>
+
+                <Form.Item
+                    label='Senha'
+                    name="senha"
+                    rules={[
+                        {
+                            required: true,
+                            message: 'A senha é obrigatoria!'
+                        }]}
+                >
+                    <Input.Password />
+                </Form.Item>
+
+                <Form.Item
+                    label='Confirmação'
+                    name="confirmSenha"
+                    rules={[
+                        {
+                            required: true,
+                            message: 'A confirmação da senha é obrigatoria!'
+                        }]}
+                >
+                    <Input.Password />
+                </Form.Item>
+
+                <Form.Item {...tailLayout}>
                     <Button
                         type="primary"
                         htmlType="submit">
                         Salvar
                     </Button>
-                }
-                <Button
-                    type="danger"
-                    onClick={redirect}
-                    htmlType="submit"
-                    style={{ marginLeft: '2px' }}
-                >
-                    Cancelar
+                    <Button
+                        type="danger"
+                        href="/usuarios"
+                        style={{ marginLeft: '2px' }}
+                    >
+                        Cancelar
                         </Button>
-
-            </Form.Item>
-        </Form>
-    );
+                </Form.Item>
+            </Form>
+        );
+    }
 }
 
 export default FormUsuario;

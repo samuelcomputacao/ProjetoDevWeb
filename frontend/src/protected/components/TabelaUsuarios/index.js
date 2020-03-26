@@ -1,16 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Input ,Table} from 'antd';
+import { useHistory } from "react-router-dom";
+import { Button, Input, Table, Divider } from 'antd';
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { notificarErro, notificarSucesso } from '../../components/Notificacao';
 import Highlighter from 'react-highlight-words';
 import { SearchOutlined } from '@ant-design/icons';
+import Titulo from '../Titulo';
 import api from '../../../service/api';
 import './index.css';
 
-function TabelaUsuarios({ dataSource, acoes }) {
+function TabelaUsuarios() {
 
     const [searchText, setSearchText] = useState('');
     const [searchedColumn, setSearchedColumn] = useState('');
     const [lista, setLista] = useState([]);
-    const [loadingTable,setLoadingTable] = useState(false);
+    const [loadingTable, setLoadingTable] = useState(false);
+    const [handleUpdateTable, setHandleUpdateTable] = useState(true);
+
+    const history = useHistory();
 
     useEffect(() => {
         async function carregaUsuarios() {
@@ -20,8 +27,55 @@ function TabelaUsuarios({ dataSource, acoes }) {
             setLoadingTable(false);
         }
         carregaUsuarios();
-    }, []);
+    }, [handleUpdateTable]);
 
+    const excluirUsuario = async (key) => {
+        try {
+            await api.delete(`/usuario/${key}`);
+            notificarSucesso('Usuário deletado com sucesso');
+            setHandleUpdateTable(!handleUpdateTable);
+        } catch (e) {
+            const { mensagem } = e.response.data;
+            notificarErro(mensagem);
+        }
+    }
+    
+
+
+    const acoes = {
+        title: 'Ações',
+        dataIndex: 'acoes',
+        key: 'acoes',
+        render: (text, record) => (
+            <span>
+                <Button
+                    type='primary'
+                    style={{ marginLeft: '2px' }}
+                    icon={<EditOutlined />}
+                    onClick={
+                        _ => { editarUsuario(record.key) }
+                    }
+                />
+                <Button
+                    type='primary'
+                    style={{ marginLeft: '2px' }}
+                    danger
+                    icon={<DeleteOutlined />}
+                    onClick={
+                        _ => { excluirUsuario(record.key) }
+                    }
+                />
+            </span>
+        ),
+    }
+
+    const editarUsuario = async (key) => {
+      history.push({
+        pathname: '/editarUsuario',
+        search: `?key=${key}`
+      });
+
+    }
 
     const getColumnSearchProps = dataIndex => ({
         filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
@@ -93,30 +147,7 @@ function TabelaUsuarios({ dataSource, acoes }) {
             key: 'nome',
             defaultSortOrder: 'ascend',
             sorter: (a, b) => ((a.nome > b.nome) ? 1 : ((b.nome > a.nome) ? -1 : 0)),
-            defaultSortOrder: 'ascend',
-            sorter: (a, b) => ((a.nome > b.nome) ? 1 : ((b.nome > a.nome) ? -1 : 0)),
             ...getColumnSearchProps('nome')
-        },
-        {
-            title: 'CpfCnpj',
-            dataIndex: 'cpfCnpj',
-            key: 'cpfCnpj',
-            defaultSortOrder: 'ascend',
-            sorter: (a, b) => ((a.cpfCnpj > b.cpfCnpj) ? 1 : ((b.cpfCnpj > a.cpfCnpj) ? -1 : 0)),
-        },
-        {
-            title: 'CpfCnpj',
-            dataIndex: 'cpfCnpj',
-            key: 'cpfCnpj',
-            defaultSortOrder: 'ascend',
-            sorter: (a, b) => ((a.cpfCnpj > b.cpfCnpj) ? 1 : ((b.cpfCnpj > a.cpfCnpj) ? -1 : 0)),
-        },
-        {
-            title: 'CpfCnpj',
-            dataIndex: 'cpfCnpj',
-            key: 'cpfCnpj',
-            defaultSortOrder: 'ascend',
-            sorter: (a, b) => ((a.cpfCnpj > b.cpfCnpj) ? 1 : ((b.cpfCnpj > a.cpfCnpj) ? -1 : 0)),
         },
         {
             title: 'CpfCnpj',
@@ -145,28 +176,13 @@ function TabelaUsuarios({ dataSource, acoes }) {
     ];
 
     return (
-             <Table dataSource={lista} columns={columns} className='Tabela' bordered loading={loadingTable}/>
-        // <Table striped bordered hover>
-        //     <thead>
-        //         <tr>
-        //             <th>Código</th>
-        //             <th>Nome</th>
-        //             <th>Cpf/Cnpj</th>
-        //             <th>Função</th>
-        //             <th>Opções</th>
-        //         </tr>
-        //     </thead>
-        //     <tbody>
-        //         {lista.map(u => (
-        //             <tr key={u.key}>
-        //                 <td>{u.key}</td>
-        //                 <td>{u.nome}</td>
-        //                 <td>{u.cpfCnpj}</td>
-        //                 <td>{u.funcao}</td>
-        //                 <td><button >click</button></td>
-        //             </tr>))}
-        //     </tbody>
-        // </Table>
+        <div>
+            <Titulo nome='Usuários' />
+            <Divider />
+            <Table dataSource={lista} columns={columns} className='Tabela' bordered loading={loadingTable} />
+            <Divider />
+            <Button type='primary' href='/cadastroUsuarios'>Cadastrar</Button>
+        </div >
     );
 }
 

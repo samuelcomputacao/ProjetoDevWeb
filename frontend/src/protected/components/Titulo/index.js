@@ -1,11 +1,11 @@
 import React from 'react';
 import {Row, Col, Badge } from  'react-bootstrap';
-function Titulo({ name }) {
+function Titulo({ nome }) {
     return (
         <Row className="justify-content-md-center">
             <Col md="auto">
                 <h1>
-                    <Badge>{name}</Badge>
+                    <Badge>{nome}</Badge>
                 </h1>
             </Col>
         </Row>

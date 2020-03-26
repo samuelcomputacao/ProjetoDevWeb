@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
 import { ArrowRightOutlined, DeleteOutlined } from '@ant-design/icons';
 import {
     Form,
@@ -67,8 +66,6 @@ function CadastroPedidos() {
         )
     }
 
-    const history = useHistory();
-
     const layout = {
         labelCol: {
             span: 5,
@@ -85,10 +82,6 @@ function CadastroPedidos() {
         },
     };
 
-    const redirect = () => {
-        history.goBack();
-    }
-
     const hortalicasBKP = [
         {
             key: '1',
@@ -96,7 +89,6 @@ function CadastroPedidos() {
             categoria: 'Folhas',
             classificacao: '5',
             valor: 3,
-            key:'1'
         },
         {
             key: '2',
@@ -104,7 +96,6 @@ function CadastroPedidos() {
             categoria: 'Folhas',
             classificacao: '5',
             valor: 2,
-            key:'2'
         },
         {
             key: '3',
@@ -112,7 +103,6 @@ function CadastroPedidos() {
             categoria: 'Folhas',
             classificacao: '5',
             valor: 5,
-            key:'3'
 
         },
     ];
@@ -121,10 +111,10 @@ function CadastroPedidos() {
     const [data, setData] = useState('');
     const [quantidade, setQuantidade] = useState(0);
     const [pedido, setPedido] = useState([]);
-    const [hortalicas, setHortalicas] = useState([...hortalicasBKP]);
+    const hortalicas = [...hortalicasBKP];
     const [hortalica, setHortalica] = useState({});
 
-    const [loading, setLoading] = useState(false);
+    const loading = false;
 
     const [visible, setVisible] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
@@ -155,6 +145,7 @@ function CadastroPedidos() {
             if (hort.key === hortalica.key) {
                 possui = true;
             }
+            return(hort);
         });
         if (!possui) {
             console.log({...hortalica,quantidade});

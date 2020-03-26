@@ -1,5 +1,4 @@
 import React from 'react';
-import Menu from '../../components/Menu';
 import TabelaPedidos from '../../components/TabelaPedidos';
 import Titulo from '../../components/Titulo';
 import { DeleteOutlined,SearchOutlined,ReloadOutlined} from '@ant-design/icons';

@@ -1,5 +1,4 @@
 import React from 'react';
-import Menu from '../../components/Menu';
 import FormUsuario from '../../components/FormUsuario';
 import Titulo from '../../components/Titulo';
 import './index.css';

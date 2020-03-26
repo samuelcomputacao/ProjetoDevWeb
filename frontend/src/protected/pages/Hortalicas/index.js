@@ -1,5 +1,4 @@
 import React from 'react';
-import Menu from '../../components/Menu';
 import { Breadcrumb, Container } from 'react-bootstrap';
 import Titulo from '../../components/Titulo';
 import TabelaHortalicas from '../../components/TabelaHortalicas';
