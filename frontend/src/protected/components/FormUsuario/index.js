@@ -5,14 +5,19 @@ import {
     Form,
     Button,
     Select,
-    Input
+    Input,
+    Divider
 } from 'antd';
 import { useHistory } from 'react-router-dom';
 
 function FormUsuario({ atualizar, location }) {
 
     const [usuario, setUsuario] = useState({});
+    const [tipoUsuario, setTipoUsuario] = useState(0);
     const [carregado, setCarregado] = useState(false);
+
+    const [loadingSalvar, setLoadingSalvar] = useState(false);
+    const [loadingAtualizar, setloadingAtualizar] = useState(false);
 
     const categorias = ['Funcionario', 'Cliente'];
     const history = useHistory();
@@ -22,12 +27,16 @@ function FormUsuario({ atualizar, location }) {
             if (location) {
                 const params = new URLSearchParams(location.search);
                 const k = params.get('key');
-                try {
-                    const { data } = await api.get(`/usuario/${k}`);
-                    await setUsuario(data);
-                    await setCarregado(true);
-                } catch (e) {
+                const t = params.get('tipo');
+                setTipoUsuario(parseInt(t));
+                if (k) {
+                    try {
+                        const { data } = await api.get(`/usuario/${k}`);
+                        await setUsuario(data);
+                        await setCarregado(true);
+                    } catch (e) {
 
+                    }
                 }
             }
         }
@@ -35,28 +44,36 @@ function FormUsuario({ atualizar, location }) {
     }, [location]);
 
     const cadastrarUsuario = async (usuario) => {
+        setLoadingSalvar(true);
+        const { nome, cpfCnpj, senha, funcao, tipoUsuario } = usuario;
         try {
-            await api.post('/usuario', { usuario });
+            await api.post('/usuario', { nome, funcao, cpfCnpj, senha, tipoUsuario });
             notificarSucesso('O usuário foi cadastrado com sucesso.');
+            setLoadingSalvar(false);
             setTimeout(() => {
                 history.push('/usuarios');
             }, 200);
         } catch (e) {
             const { mensagem } = e.response.data;
             notificarErro(mensagem);
+            setLoadingSalvar(false);
         }
     }
 
     const editarUsuario = async (usuario) => {
+        setloadingAtualizar(true);
+        const { nome, funcao, senha, key } = usuario;
         try {
-            await api.put('/usuario', { usuario });
+            await api.put('/usuario', { nome, funcao, senha }, { params: { 'key': key } });
             notificarSucesso('O usuário foi atualizado com sucesso.');
+            setloadingAtualizar(false);
             setTimeout(() => {
                 history.push('/usuarios');
             }, 200);
         } catch (e) {
             const { mensagem } = e.response.data;
             notificarErro(mensagem);
+            setloadingAtualizar(false);
         }
     }
 
@@ -77,26 +94,26 @@ function FormUsuario({ atualizar, location }) {
                 funcao,
                 cpfCnpj,
                 senha,
+                tipoUsuario
             };
             cadastrarUsuario(usuarioC);
         }
     };
 
     const onFinishEdit = async (values) => {
-        const { nome, funcao, cpfCnpj, senha, confirmSenha } = values;
-        if (senha && senha !== confirmSenha) {
-            notificarErro('As senhas não são iguais');
-        } else {
-            if (nome && funcao && cpfCnpj) {
-                const usuarioEdit = {
-                    nome,
-                    funcao,
-                    cpfCnpj,
-                    senha,
-                };
-                editarUsuario(usuarioEdit);
-            }
+        setloadingAtualizar(true);
+        const { nome, funcao, cpfCnpj, senha } = values;
+
+        if (nome && funcao && cpfCnpj) {
+            const usuarioEdit = {
+                nome,
+                funcao,
+                senha,
+                key: usuario.key
+            };
+            editarUsuario(usuarioEdit);
         }
+
     };
 
     const onFinishFailed = errorInfo => {
@@ -117,6 +134,31 @@ function FormUsuario({ atualizar, location }) {
             span: 16,
         },
     };
+
+    const validarCpfCnpj = (value) => {
+        const regexCpf = '^[0-9]{3}[.][0-9]{3}[.][0-9]{3}[-][0-9]{2}$';
+        const regexCnpj = '^[0-9]{3}[.][0-9]{3}[.][0-9]{3}[/][0-9]{4}[-][0-9]{2}$';
+
+        if (value) {
+            console.log('Tipo: ' + tipoUsuario);
+            if (tipoUsuario === 0) {
+                if (value.match(regexCpf)) {
+                    return Promise.resolve();
+                } else {
+                    return Promise.reject('O CPF não se encontra no formato: xxx.xxx.xxx-xx');
+                }
+            } else if (tipoUsuario === 1) {
+                if (value.match(regexCnpj)) {
+                    console.log('math cnpj');
+                    return Promise.resolve();
+                } else {
+                    return Promise.reject('O Cnpj não se encontra no formato: xxx.xxx.xxx/xxxx-xx');
+                }
+            }
+        }
+        return Promise.resolve();
+    }
+
     if (carregado) {
         return (
             <div>
@@ -135,13 +177,17 @@ function FormUsuario({ atualizar, location }) {
                     size='larger'>
                     <Form.Item
                         label='Nome'
-                        name="nome">
+                        name="nome"
+                        rules={[
+                            {
+                                required: true,
+                                message: 'O nome é obrigatorio!'
+                            }]}>
                         <Input />
                     </Form.Item>
                     <Form.Item
-                        label='Cpf/Cnpj'
+                        label={tipoUsuario === 0 ? 'Cpf' : 'Cnpj'}
                         name="cpfCnpj"
-
 
                     >
                         <Input readOnly />
@@ -149,7 +195,6 @@ function FormUsuario({ atualizar, location }) {
                     <Form.Item
                         label='Função'
                         name="funcao"
-
                     >
                         <Select>
                             {
@@ -170,14 +215,31 @@ function FormUsuario({ atualizar, location }) {
                     <Form.Item
                         label='Confirmação'
                         name="confirmSenha"
+                        rules={[
+
+                            ({ getFieldValue }) => ({
+                                validator(rule, value) {
+                                    if (!value && !getFieldValue('senha')) {
+                                        return Promise.resolve();
+                                    } else if (getFieldValue('senha') === value) {
+                                        return Promise.resolve();
+                                    }
+
+                                    return Promise.reject('As senhas não são iguais!');
+                                },
+                            }),
+                        ]}
                     >
                         <Input.Password />
                     </Form.Item>
 
                     <Form.Item {...tailLayout}>
+                        <Divider/>
                         <Button
                             type="primary"
-                            htmlType="submit">
+                            htmlType="submit"
+                            loading={loadingAtualizar}
+                        >
                             Atualizar
                         </Button>
 
@@ -214,16 +276,24 @@ function FormUsuario({ atualizar, location }) {
                     <Input id='nomeId' />
                 </Form.Item>
                 <Form.Item
-                    label='Cpf/Cnpj'
+                    label={tipoUsuario === 0 ? 'Cpf' : 'Cnpj'}
                     name="cpfCnpj"
                     rules={[
                         {
                             required: true,
-                            message: 'O CPF/Cnpj é obrigatorio!'
-                        }]}
+                            message: `O ${tipoUsuario === 0 ? 'Cpf' : 'Cnpj'} é obrigatorio!`
+                        },
+                        () => ({
+                            validator(_, value) {
+                                return validarCpfCnpj(value);
+                            },
+                        }),
+
+                    ]}
                 >
                     <Input />
                 </Form.Item>
+
                 <Form.Item
                     label='Função'
                     name="funcao"
@@ -261,15 +331,28 @@ function FormUsuario({ atualizar, location }) {
                         {
                             required: true,
                             message: 'A confirmação da senha é obrigatoria!'
-                        }]}
+                        },
+                        ({ getFieldValue }) => ({
+                            validator(rule, value) {
+                                if (!value || getFieldValue('senha') === value) {
+                                    return Promise.resolve();
+                                }
+
+                                return Promise.reject('As senhas não são iguais!');
+                            },
+                        }),
+                    ]}
                 >
                     <Input.Password />
                 </Form.Item>
 
                 <Form.Item {...tailLayout}>
+                    <Divider/>
                     <Button
                         type="primary"
-                        htmlType="submit">
+                        htmlType="submit"
+                        loading={loadingSalvar}
+                    >
                         Salvar
                     </Button>
                     <Button

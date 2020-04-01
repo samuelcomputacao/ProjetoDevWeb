@@ -9,7 +9,7 @@ module.exports = {
 
     async findById(request,response){
         const {key} = request.params;
-        const usuario = await connection('usuario').where('key','=',key).select('nome','funcao','cpfCnpj').first();
+        const usuario = await connection('usuario').where('key','=',key).select('*').first();
         if(usuario){
             return response.status(200).json(usuario);
         }
@@ -17,7 +17,8 @@ module.exports = {
     },
 
     async create(request, response){
-        const {nome, cpfCnpj, senha, funcao} = request.body.usuario;
+        const {nome, cpfCnpj, senha, funcao,tipoUsuario} = request.body;
+        
         const usuarios = await connection('usuario').where('cpfCnpj',cpfCnpj).select('key').first();
         if(usuarios){
            return response.status(500).json({mensagem:'O cpf/cnpj já está cadastrado!'});
@@ -27,21 +28,24 @@ module.exports = {
             nome,
             cpfCnpj,
             senha,
-            funcao
+            funcao,
+            tipoUsuario
         });
         return response.json();
     },
 
     async update(request, response){
-        const {usuario} = request.body;
-        if(usuario.nome){
-            await connection('usuario').where('cpfCnpj','=',usuario.cpfCnpj).update('nome',usuario.nome);
+        const {key} = request.query;
+        const {nome, funcao, senha} = request.body;
+        
+        if(nome){
+            await connection('usuario').where('key','=',key).update('nome',nome);
         }
-        if(usuario.senha){
-            await connection('usuario').where('cpfCnpj','=',usuario.cpfCnpj).update('senha',usuario.senha);
+        if(senha){
+            await connection('usuario').where('key','=',key).update('senha',senha);
         }
-        if(usuario.funcao){
-            await connection('usuario').where('cpfCnpj','=',usuario.cpfCnpj).update('funcao',usuario.funcao);
+        if(funcao){
+            await connection('usuario').where('key','=',key).update('funcao',funcao);
         }
         return response.json();
     },

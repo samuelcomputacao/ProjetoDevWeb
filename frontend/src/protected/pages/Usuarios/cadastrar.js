@@ -8,7 +8,7 @@ import Titulo from '../../components/Titulo';
 const { Item } = Breadcrumb;
 
 
-function CadastroUsuario() {
+function CadastroUsuario({location}) {
 
     return (
         <div>
@@ -20,7 +20,7 @@ function CadastroUsuario() {
             <Container>
                 <Titulo nome='Cadastro de Usuários' />
                 <Divider />
-                <FormUsuario />
+                <FormUsuario location={location}/>
             </Container>
         </div>
     );

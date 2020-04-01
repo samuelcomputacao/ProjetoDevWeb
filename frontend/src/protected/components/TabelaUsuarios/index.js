@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from "react-router-dom";
-import { Button, Input, Table, Divider } from 'antd';
+import { Button, Input, Table } from 'antd';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { notificarErro, notificarSucesso } from '../../components/Notificacao';
 import Highlighter from 'react-highlight-words';
 import { SearchOutlined } from '@ant-design/icons';
-import Titulo from '../Titulo';
 import api from '../../../service/api';
+import {showConfirm} from '../ConfirmAcao';
 import './index.css';
-
 function TabelaUsuarios() {
 
     const [searchText, setSearchText] = useState('');
@@ -17,7 +16,10 @@ function TabelaUsuarios() {
     const [loadingTable, setLoadingTable] = useState(false);
     const [handleUpdateTable, setHandleUpdateTable] = useState(true);
 
+
+
     const history = useHistory();
+
 
     useEffect(() => {
         async function carregaUsuarios() {
@@ -29,7 +31,7 @@ function TabelaUsuarios() {
         carregaUsuarios();
     }, [handleUpdateTable]);
 
-    const excluirUsuario = async (key) => {
+    const excluirUsuario = async ({key}) => {
         try {
             await api.delete(`/usuario/${key}`);
             notificarSucesso('Usuário deletado com sucesso');
@@ -39,7 +41,7 @@ function TabelaUsuarios() {
             notificarErro(mensagem);
         }
     }
-    
+
 
 
     const acoes = {
@@ -53,7 +55,7 @@ function TabelaUsuarios() {
                     style={{ marginLeft: '2px' }}
                     icon={<EditOutlined />}
                     onClick={
-                        _ => { editarUsuario(record.key) }
+                        _ => { editarUsuario(record) }
                     }
                 />
                 <Button
@@ -61,19 +63,23 @@ function TabelaUsuarios() {
                     style={{ marginLeft: '2px' }}
                     danger
                     icon={<DeleteOutlined />}
-                    onClick={
-                        _ => { excluirUsuario(record.key) }
+                    onClick={_ => {
+                        const title = 'Deseja excluir o usuário?'
+                        const content = `Ao clicar em OK você excluirá o usuário de código ${record.key}`;
+                        const params = { key:record.key };
+                        showConfirm(title, content, excluirUsuario, params);
+                    }
                     }
                 />
             </span>
         ),
     }
 
-    const editarUsuario = async (key) => {
-      history.push({
-        pathname: '/editarUsuario',
-        search: `?key=${key}`
-      });
+    const editarUsuario = async (usuario) => {
+        history.push({
+            pathname: '/editarUsuario',
+            search: `?key=${usuario.key}&tipo=${usuario.tipoUsuario}`
+        });
 
     }
 
@@ -175,14 +181,13 @@ function TabelaUsuarios() {
         acoes,
     ];
 
+
+
     return (
-        <div>
-            <Titulo nome='Usuários' />
-            <Divider />
-            <Table dataSource={lista} columns={columns} className='Tabela' bordered loading={loadingTable} />
-            <Divider />
-            <Button type='primary' href='/cadastroUsuarios'>Cadastrar</Button>
-        </div >
+
+        <Table dataSource={lista} columns={columns} className='Tabela' bordered loading={loadingTable} pagination={{ pageSizeOptions: ['5', '10', '20', '40'], showSizeChanger: true, pageSize: 5 }} />
+
+
     );
 }
 

@@ -6,6 +6,7 @@ exports.up = function(knex) {
         table.string('cpfCnpj').notNullable();
         table.string('funcao').notNullable();
         table.string('senha').notNullable();
+        table.integer('tipoUsuario').notNullable();
     });
 };
 

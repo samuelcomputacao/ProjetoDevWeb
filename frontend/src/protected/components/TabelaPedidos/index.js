@@ -29,7 +29,7 @@ function TabelaPedidos({dataSource,acoes}) {
 
 
     return (  
-        <Table dataSource={dataSource} columns={columns} className='Tabela' />   
+        <Table dataSource={dataSource} columns={columns} className='Tabela' pagination= { {pageSizeOptions: ['5','10','20', '40'], showSizeChanger: true,pageSize:5}}/>   
     );
 }
 

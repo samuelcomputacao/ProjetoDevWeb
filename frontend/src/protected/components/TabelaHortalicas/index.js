@@ -1,14 +1,85 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table, Button,Input } from 'antd';
 import Highlighter from 'react-highlight-words';
-import { SearchOutlined } from '@ant-design/icons';
+import { SearchOutlined,DeleteOutlined,EditOutlined } from '@ant-design/icons';
+import api from '../../../service/api';
+import { useHistory } from 'react-router-dom';
+import { notificarSucesso, notificarErro } from '../Notificacao';
+import {showConfirm} from '../ConfirmAcao';
 
-function TabelaHortalicas({ dataSource, acoes}) {
+function TabelaHortalicas() {
+
+    const [lista, setLista] = useState('');
+    
+    const [loadingTable, setLoadingTable] = useState(false);
+    const [handleUpdateTable, setHandleUpdateTable] = useState(true);
 
     const [searchText, setSearchText]  = useState('');
     const [searchedColumn, setSearchedColumn] = useState('');
-    
 
+    const history = useHistory();
+
+
+    useEffect(() => {
+        async function carregaHortalicas() {
+            setLoadingTable(true);
+            const { data } = await api.get('/hortalica');
+            setLista(data);
+            setLoadingTable(false);
+        }
+        carregaHortalicas();
+    }, [handleUpdateTable]);
+
+
+    const acoes = {
+        title: 'Ações',
+        dataIndex: 'acoes',
+        key: 'acoes',
+        render: (text, record) => (
+            <span>
+                <Button
+                    type='primary'
+                    style={{ marginLeft: '2px' }}
+                    icon={<EditOutlined />}
+                    onClick={_ => {
+                        editarHortalica(record.key);
+                    }}
+                />
+                <Button
+                    type='primary'
+                    style={{ marginLeft: '2px' }}
+                    danger
+                    icon={<DeleteOutlined />}
+                    onClick={_ => {
+                        const title = 'Deseja excluir a hortaliça?'
+                        const content = `Ao clicar em OK você excluirá a hortaliça de código ${record.key}`;
+                        const params = { key:record.key };
+                        showConfirm(title, content, excluiHortalica, params);
+                    }
+                }
+                />
+            </span>
+        )
+    }
+
+    const editarHortalica = (key) => {
+        history.push({
+            pathname:'/editarHortalica',
+            search:`?key=${key}`
+        })
+    }
+
+    const excluiHortalica = async ({key}) =>{
+        try {
+            await api.delete(`/hortalica/${key}`);
+            setHandleUpdateTable(!handleUpdateTable);
+            notificarSucesso('Hortaliça removida com sucesso.')
+        } catch (e) {
+            const {mensagem} = e.response.data;
+            notificarErro(mensagem);
+        }
+    }
+    
     const getColumnSearchProps = dataIndex => ({
         filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
             <div style={{ padding: 8 }}>
@@ -68,8 +139,8 @@ function TabelaHortalicas({ dataSource, acoes}) {
     const columns = [
         {
             title: 'Codigo',
-            dataIndex: 'id',
-            key: 'id',
+            dataIndex: 'key',
+            key: 'key',
             defaultSortOrder: 'ascend',
             sorter: (a, b) => a.key - b.key,
 
@@ -124,7 +195,7 @@ function TabelaHortalicas({ dataSource, acoes}) {
     ];
 
     return (
-        <Table dataSource={dataSource} columns={columns} className='Tabela' />
+        <Table dataSource={lista} columns={columns} className='Tabela' loading={loadingTable}  pagination= { {pageSizeOptions: ['5','10','20', '40'], showSizeChanger: true,pageSize:5}}/>
     );
 }
 
