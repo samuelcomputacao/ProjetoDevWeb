@@ -4,11 +4,9 @@ import Home from './protected/pages/Home';
 import Pedidos from './protected/pages/Pedidos';
 import Usuarios from './protected/pages/Usuarios';
 import Hortalicas from './protected/pages/Hortalicas';
-import CadastroHortalicas from './protected/pages/Hortalicas/cadastrar';
-import CadastroUsuarios from './protected/pages/Usuarios/cadastrar';
 import CadastroPedidos from './protected/pages/Pedidos/cadastrar';
-import EditarUsuario from './protected/pages/Usuarios/editar';
-import EditarHortalica from './protected/pages/Hortalicas/editar';
+import PerfilUsuario from './protected/pages/Usuarios/perfil';
+import PerfilHortalica from './protected/pages/Hortalicas/perfil';
 function Rotas() {
     return (
         <Router>
@@ -17,10 +15,8 @@ function Rotas() {
                 <Route path='/pedidos' component={Pedidos} />
                 <Route path='/usuarios' component={Usuarios} />
                 <Route path='/hortalicas' component={Hortalicas} />
-                <Route path='/cadastroHortalicas' component={CadastroHortalicas} />
-                <Route path='/editarHortalica' component={EditarHortalica} />
-                <Route path='/cadastroUsuarios' component={CadastroUsuarios} />
-                <Route path='/editarUsuario' component={EditarUsuario}/> 
+                <Route path='/perfilHortalica' component={PerfilHortalica} />
+                <Route path='/perfilUsuario' component={PerfilUsuario}/> 
                 <Route path='/cadastroPedidos' component={CadastroPedidos} />
                 <Route path='/home' component={Home}/>
             </Switch>

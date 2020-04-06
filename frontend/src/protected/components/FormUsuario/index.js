@@ -10,10 +10,9 @@ import {
 } from 'antd';
 import { useHistory } from 'react-router-dom';
 
-function FormUsuario({ atualizar, location }) {
+function FormUsuario({ atualizar, keyUsuario, tipoUsuario }) {
 
     const [usuario, setUsuario] = useState({});
-    const [tipoUsuario, setTipoUsuario] = useState(0);
     const [carregado, setCarregado] = useState(false);
 
     const [loadingSalvar, setLoadingSalvar] = useState(false);
@@ -24,16 +23,12 @@ function FormUsuario({ atualizar, location }) {
 
     useEffect(() => {
         async function buscaUsuario() {
-            if (location) {
-                const params = new URLSearchParams(location.search);
-                const k = params.get('key');
-                const t = params.get('tipo');
-                setTipoUsuario(parseInt(t));
-                if (k) {
+            if (atualizar) {
+                if (keyUsuario) {
                     try {
-                        const { data } = await api.get(`/usuario/${k}`);
+                        const { data } = await api.get(`/usuario/${keyUsuario}`);
                         await setUsuario(data);
-                        await setCarregado(true);
+                        setCarregado(true);
                     } catch (e) {
 
                     }
@@ -41,7 +36,7 @@ function FormUsuario({ atualizar, location }) {
             }
         }
         buscaUsuario();
-    }, [location]);
+    }, [atualizar, keyUsuario, tipoUsuario]);
 
     const cadastrarUsuario = async (usuario) => {
         setLoadingSalvar(true);

@@ -18,7 +18,7 @@ function Hortalicas() {
                 <Divider />
                 <TabelaHortalicas/>
                 <Divider />
-                <Button type='primary' href='/cadastroHortalicas'>Cadastrar</Button>
+                <Button type='primary' href='/perfilHortalica'>Cadastrar</Button>
             </Container>
         </div>
     );

@@ -64,7 +64,7 @@ function TabelaHortalicas() {
 
     const editarHortalica = (key) => {
         history.push({
-            pathname:'/editarHortalica',
+            pathname:'/perfilHortalica',
             search:`?key=${key}`
         })
     }
@@ -195,7 +195,7 @@ function TabelaHortalicas() {
     ];
 
     return (
-        <Table dataSource={lista} columns={columns} className='Tabela' loading={loadingTable}  pagination= { {pageSizeOptions: ['5','10','20', '40'], showSizeChanger: true,pageSize:5}}/>
+        <Table dataSource={lista} columns={columns} className='Tabela' loading={loadingTable}  pagination= { {pageSizeOptions: ['5','10','20', '40'], showSizeChanger: true, defaultPageSize:5}}/>
     );
 }
 

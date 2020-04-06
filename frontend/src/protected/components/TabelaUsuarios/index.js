@@ -77,7 +77,7 @@ function TabelaUsuarios() {
 
     const editarUsuario = async (usuario) => {
         history.push({
-            pathname: '/editarUsuario',
+            pathname: '/perfilUsuario',
             search: `?key=${usuario.key}&tipo=${usuario.tipoUsuario}`
         });
 
@@ -185,7 +185,7 @@ function TabelaUsuarios() {
 
     return (
 
-        <Table dataSource={lista} columns={columns} className='Tabela' bordered loading={loadingTable} pagination={{ pageSizeOptions: ['5', '10', '20', '40'], showSizeChanger: true, pageSize: 5 }} />
+        <Table dataSource={lista} columns={columns} className='Tabela' bordered loading={loadingTable} pagination={{ pageSizeOptions: ['5', '10', '20', '40'], showSizeChanger: true, defaultPageSize: 5 }} />
 
 
     );

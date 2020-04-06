@@ -4,7 +4,7 @@ import { notificarErro, notificarSucesso } from '../Notificacao';
 import { useHistory } from 'react-router-dom';
 import api from '../../../service/api';
 
-function FormHortalica({ location }) {
+function FormHortalica({ keyHortalica , atualizar}) {
 
     const history = useHistory();
 
@@ -18,22 +18,21 @@ function FormHortalica({ location }) {
 
     useEffect(() => {
         async function buscarHortalica() {
-            if (location) {
-                const params = new URLSearchParams(location.search);
-                const key = params.get('key');
-                try {
-                    const { data } = await api.get(`/hortalica/${key}`)
-                    await setHortalica(data);
-                    await setCarregado(true);
-                    console.log(data);
-                } catch (e) {
-                    const { mensagem } = e.reponse.data;
-                    notificarErro(mensagem);
+            if(atualizar){
+                if(keyHortalica){
+                    try {
+                        const { data } = await api.get(`/hortalica/${keyHortalica}`)
+                        await setHortalica(data);
+                        setCarregado(true);
+                    } catch (e) {
+                        const { mensagem } = e.reponse.data;
+                        notificarErro(mensagem);
+                    }
                 }
             }
         }
         buscarHortalica();
-    }, [location]);
+    }, [atualizar,keyHortalica]);
 
     const onFormLayoutChange = ({ size }) => {
         console.log('formChange');

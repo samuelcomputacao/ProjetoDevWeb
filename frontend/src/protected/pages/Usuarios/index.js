@@ -34,7 +34,7 @@ function Usuarios() {
 
     const redirectCadastro = () => {
         history.push({
-            pathname: '/cadastroUsuarios',
+            pathname: '/perfilUsuario',
             search: `?tipo=${tipoCadastro}`
         });
     }
