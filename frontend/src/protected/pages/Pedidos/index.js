@@ -81,7 +81,7 @@ function Pedidos() {
                 <Divider/>
                 <TabelaPedidos dataSource={dataSource} acoes={acoes} />
                 <Divider/>
-                <Button type='primary' href='/cadastroPedidos'>Cadastrar</Button>
+                <Button type='primary' href='/perfilPedidos'>Cadastrar</Button>
             </Container>
         </div>
     );

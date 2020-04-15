@@ -4,9 +4,9 @@ import Home from './protected/pages/Home';
 import Pedidos from './protected/pages/Pedidos';
 import Usuarios from './protected/pages/Usuarios';
 import Hortalicas from './protected/pages/Hortalicas';
-import CadastroPedidos from './protected/pages/Pedidos/cadastrar';
 import PerfilUsuario from './protected/pages/Usuarios/perfil';
 import PerfilHortalica from './protected/pages/Hortalicas/perfil';
+import PerfilPedidos from './protected/pages/Pedidos/perfil';
 function Rotas() {
     return (
         <Router>
@@ -17,7 +17,7 @@ function Rotas() {
                 <Route path='/hortalicas' component={Hortalicas} />
                 <Route path='/perfilHortalica' component={PerfilHortalica} />
                 <Route path='/perfilUsuario' component={PerfilUsuario}/> 
-                <Route path='/cadastroPedidos' component={CadastroPedidos} />
+                <Route path='/perfilPedidos' component={PerfilPedidos} />
                 <Route path='/home' component={Home}/>
             </Switch>
         </Router>

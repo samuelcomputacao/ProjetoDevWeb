@@ -1,87 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory } from "react-router-dom";
 import { Button, Input, Table } from 'antd';
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { notificarErro, notificarSucesso } from '../../components/Notificacao';
 import Highlighter from 'react-highlight-words';
 import { SearchOutlined } from '@ant-design/icons';
-import api from '../../../service/api';
-import {showConfirm} from '../ConfirmAcao';
 import './index.css';
-function TabelaUsuarios() {
+function TabelaUsuarios({getData, acoes, handleUpdateTable}) {
 
     const [searchText, setSearchText] = useState('');
     const [searchedColumn, setSearchedColumn] = useState('');
     const [lista, setLista] = useState([]);
     const [loadingTable, setLoadingTable] = useState(false);
-    const [handleUpdateTable, setHandleUpdateTable] = useState(true);
-
-
-
-    const history = useHistory();
 
 
     useEffect(() => {
         async function carregaUsuarios() {
             setLoadingTable(true);
-            const { data } = await api.get('/usuario');
+            const data = await getData();
             setLista(data);
             setLoadingTable(false);
         }
         carregaUsuarios();
-    }, [handleUpdateTable]);
+    }, [getData,handleUpdateTable]);
 
-    const excluirUsuario = async ({key}) => {
-        try {
-            await api.delete(`/usuario/${key}`);
-            notificarSucesso('Usuário deletado com sucesso');
-            setHandleUpdateTable(!handleUpdateTable);
-        } catch (e) {
-            const { mensagem } = e.response.data;
-            notificarErro(mensagem);
-        }
-    }
-
-
-
-    const acoes = {
-        title: 'Ações',
-        dataIndex: 'acoes',
-        key: 'acoes',
-        render: (text, record) => (
-            <span>
-                <Button
-                    type='primary'
-                    style={{ marginLeft: '2px' }}
-                    icon={<EditOutlined />}
-                    onClick={
-                        _ => { editarUsuario(record) }
-                    }
-                />
-                <Button
-                    type='primary'
-                    style={{ marginLeft: '2px' }}
-                    danger
-                    icon={<DeleteOutlined />}
-                    onClick={_ => {
-                        const title = 'Deseja excluir o usuário?'
-                        const content = `Ao clicar em OK você excluirá o usuário de código ${record.key}`;
-                        const params = { key:record.key };
-                        showConfirm(title, content, excluirUsuario, params);
-                    }
-                    }
-                />
-            </span>
-        ),
-    }
-
-    const editarUsuario = async (usuario) => {
-        history.push({
-            pathname: '/perfilUsuario',
-            search: `?key=${usuario.key}&tipo=${usuario.tipoUsuario}`
-        });
-
-    }
+    
+   
 
     const getColumnSearchProps = dataIndex => ({
         filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
@@ -184,10 +125,7 @@ function TabelaUsuarios() {
 
 
     return (
-
         <Table dataSource={lista} columns={columns} className='Tabela' bordered loading={loadingTable} pagination={{ pageSizeOptions: ['5', '10', '20', '40'], showSizeChanger: true, defaultPageSize: 5 }} />
-
-
     );
 }
 

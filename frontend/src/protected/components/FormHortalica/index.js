@@ -58,11 +58,11 @@ function FormHortalica({ keyHortalica , atualizar}) {
         setLoadingAtualizar(true);
         const { nome, categoria, valor } = values;
         try {
-            await api.post('/hortalica', { nome, categoria, valor });
-            notificarSucesso('Hortaliça cadastrada.')
+            await api.put(`/hortalica/${hortalica.key}`, { nome, categoria, valor });
+            notificarSucesso('Hortaliça Atualizada.')
             setLoadingAtualizar(false);
             setTimeout(_ => {
-                history.push('/hortalicas')
+                history.push('/hortalicas');
             }, 200);
 
         } catch (e) {
@@ -101,7 +101,8 @@ function FormHortalica({ keyHortalica , atualizar}) {
                         remember: true,
                         nome: 'nomeeee',
                         categoria: hortalica.categoria,
-                        valor: hortalica.valor
+                        valor: hortalica.valor,
+                        key:hortalica.key
                     }}
                     onFinish={onFinishEdit}
                     onFinishFailed={onFinishFailed}

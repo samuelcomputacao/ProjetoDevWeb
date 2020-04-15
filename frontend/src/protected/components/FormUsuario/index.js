@@ -57,9 +57,9 @@ function FormUsuario({ atualizar, keyUsuario, tipoUsuario }) {
 
     const editarUsuario = async (usuario) => {
         setloadingAtualizar(true);
-        const { nome, funcao, senha, key } = usuario;
+        const { nome, funcao, senha } = usuario;
         try {
-            await api.put('/usuario', { nome, funcao, senha }, { params: { 'key': key } });
+            await api.put(`/usuario/${usuario.key}`, { nome, funcao, senha });
             notificarSucesso('O usuário foi atualizado com sucesso.');
             setloadingAtualizar(false);
             setTimeout(() => {
