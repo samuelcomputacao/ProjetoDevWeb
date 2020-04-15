@@ -35,7 +35,7 @@ module.exports = {
     },
 
     async update(request, response){
-        const {key} = request.query;
+        const {key} = request.params;
         const {nome, funcao, senha} = request.body;
         
         if(nome){

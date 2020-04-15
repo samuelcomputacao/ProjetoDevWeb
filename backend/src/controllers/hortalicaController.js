@@ -29,8 +29,9 @@ module.exports = {
     },
 
     async update(request, response) {
-        const { key } = request.query;
-        const { nome, categoria, valor } = response.body;
+        const { key } = request.params;
+        const { nome, categoria, valor } = request.body;
+        console.log(key);
         const hortalica = await connection('hortalica').where('key', '=', key).select('*').first();
         if (hortalica) {
             if (nome) {
@@ -42,6 +43,7 @@ module.exports = {
             if(valor){
                 await connection('hortalica').where('key','=',key).update('valor',valor);
             }
+            response.send(200);
         } else {
             response.status(500).json({ mensagem: 'Hortaliça não cadastrada.' })
         }
