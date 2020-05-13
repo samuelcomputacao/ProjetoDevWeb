@@ -13,6 +13,7 @@ module.exports = {
 
     async index(_, response) {
         const hortalicas = await connection('hortalica').select('*');
+        let i = 1;
         return response.json(hortalicas);
     },
 

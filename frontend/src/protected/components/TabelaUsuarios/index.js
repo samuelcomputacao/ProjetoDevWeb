@@ -109,12 +109,12 @@ function TabelaUsuarios({getData, acoes, handleUpdateTable}) {
             dataIndex: 'funcao',
             filters: [
                 {
-                    text: 'Funcionario',
-                    value: 'Funcionario',
+                    text: 'FUNCIONARIO',
+                    value: 'FUNCIONARIO',
                 },
                 {
-                    text: 'Cliente',
-                    value: 'Cliente',
+                    text: 'CLIENTE',
+                    value: 'CLIENTE',
                 },
             ],
             onFilter: (value, record) => record.funcao.indexOf(value) === 0,

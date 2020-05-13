@@ -18,7 +18,7 @@ function FormUsuario({ atualizar, keyUsuario, tipoUsuario }) {
     const [loadingSalvar, setLoadingSalvar] = useState(false);
     const [loadingAtualizar, setloadingAtualizar] = useState(false);
 
-    const categorias = ['Funcionario', 'Cliente'];
+    const categorias = ['FUNCIONARIO', 'CLIENTE'];
     const history = useHistory();
 
     useEffect(() => {

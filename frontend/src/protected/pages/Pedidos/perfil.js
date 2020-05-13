@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ArrowRightOutlined, DeleteOutlined } from '@ant-design/icons';
 import {
     Form,
@@ -17,15 +17,34 @@ import TabelaHortalicas from '../../components/TabelaHortalicas';
 import api from '../../../service/api';
 import {showConfirm} from '../../components/ConfirmAcao';
 import {notificarErro,notificarSucesso} from '../../components/Notificacao';
+import {getKeyUsuarioLogado} from '../../../service/usuario';
+import { useHistory } from 'react-router-dom';
 const { Item } = Breadcrumb;
 
 
 function PerfilPedidos() {
+
+    const [data, setData] = useState('');
+    const [quantidade, setQuantidade] = useState(1);
+    const [pedido, setPedido] = useState([]);
+    const [dateString, setDateString] = useState('');
+    const [hortalica, setHortalica] = useState({});
+    const [valorTotal,setValorTotal] = useState(0);
+
+    const historico = useHistory();
+
+    const loading = false;
+
+    const [visible, setVisible] = useState(false);
+    const [confirmLoading, setConfirmLoading] = useState(false);
+
+    const [handlerUpdateTable, setHandlerUpdateTable] = useState(false);
+
     const acoes = {
         title: 'Inserir',
         dataIndex: 'inserir',
         key: 'inserir',
-        render: (text, record) => (
+        render: (_, record) => (
             <span>
                 <Button
                     type='primary'
@@ -85,28 +104,6 @@ function PerfilPedidos() {
         },
     };
 
-    const [data, setData] = useState('');
-    const [quantidade, setQuantidade] = useState(1);
-    const [pedido, setPedido] = useState([]);
-    const [hortalicas, setHortalicas] = useState([]);
-    const [hortalica, setHortalica] = useState({});
-    const [valorTotal,setValorTotal] = useState(0);
-
-    const loading = false;
-
-    const [visible, setVisible] = useState(false);
-    const [confirmLoading, setConfirmLoading] = useState(false);
-
-    const [handlerUpdateTable, setHandlerUpdateTable] = useState(false);
-
-    useEffect(()=>{
-        async function carregaHortalicas(){
-            const {data} = await api.get('/hortalica');
-            setHortalicas(data);
-        }
-        carregaHortalicas();
-    },[])
-
     const showModal = () => {
         setVisible(true);
     };
@@ -123,8 +120,27 @@ function PerfilPedidos() {
         setVisible(false);
     };
 
-    const salvarPedido = () => {
-        alert(data);
+    const salvarPedido = async() => {
+        let listaHortalicas = [];
+        await pedido.forEach((pedido) => {
+            listaHortalicas = [...listaHortalicas,{
+                keyHortalica:pedido.key,
+                quantidade:
+                pedido.quantidade
+            }];
+        });
+
+        const pedidoRequisicao = {
+            data:dateString,
+            hortalicas:listaHortalicas
+        };
+        try{
+            await api.post('/pedido',pedidoRequisicao,{params:{keyUsuario:getKeyUsuarioLogado()}});
+            notificarSucesso('Pedido cadastrado com sucesso.');
+            historico.push('/pedidos');
+        }catch(e){
+            notificarErro(e.response.data.mensagem);
+        }
     }
 
     const inserirHortalica = () => {
@@ -132,11 +148,10 @@ function PerfilPedidos() {
             notificarErro('Quantidade inválida.');
         }else{
             let possui = false;
-            pedido.map((hort) => {
+            pedido.forEach((hort) => {
                 if (hort.key === hortalica.key) {
                     possui = true;
                 }
-                return(hort);
             });
             if (!possui) {
                 setPedido([...pedido, {...hortalica,quantidade}])
@@ -153,13 +168,12 @@ function PerfilPedidos() {
     const removerPedido = (key) => {
         let pedidoAux = [];
         let valorReferencia = 0;
-        pedido.map((hort) => {
+        pedido.forEach((hort) => {
             if (hort.key !== key) {
               pedidoAux = [...pedidoAux,hort];
             }else{
                 valorReferencia = hort.valor*hort.quantidade;
             }
-            return(hort);
         });
         showConfirm('Remover hortaliça',`Deseja remover a hortaliça de código: ${key}?`,atualizarPedido,{pedidoAux,valorReferencia});
     }
@@ -174,12 +188,14 @@ function PerfilPedidos() {
         return pedido;
     }
 
-    const getHortalicas = () => {
-        return hortalicas;
+    const getHortalicas = async () => {
+        const {data} = await api.get('/hortalica');
+        return data;
     }
 
     const onChangeData = (date, dateString) => {
         setData(date);
+        setDateString(dateString);
     }
 
 
@@ -208,7 +224,7 @@ function PerfilPedidos() {
                     <Form.Item
                         {...tailLayout}
                         label='Data: '>
-                        <DatePicker onChange={onChangeData} format={'DD/MM/YYYY'}/>
+                        <DatePicker value={data} onChange={onChangeData} format={'DD/MM/YYYY'} locale={'pt-BR'}/>
                     </Form.Item>
                 </Form>
                 <Button type='primary  ' onClick={salvarPedido}>Salvar</Button>
@@ -220,7 +236,7 @@ function PerfilPedidos() {
                     onCancel={handleCancel}
                     footer={[
                         <Button key="back" onClick={handleCancel}>
-                          Camcelar
+                          Cancelar
                         </Button>,
                         <Button key="submit" type="primary" loading={loading} onClick={inserirHortalica}>
                           Adicionar
@@ -232,9 +248,9 @@ function PerfilPedidos() {
                         <Form.Item {...tailLayout}
                             label='Quantidade: '
                         >
-                        <InputNumber min={0} onChange={(value) =>{
+                        <InputNumber min={1} onChange={(value) =>{
                             setQuantidade(value);
-                        }}/>
+                        }} value={quantidade}/>
                         </Form.Item>
                     </Form>
                 </Modal>

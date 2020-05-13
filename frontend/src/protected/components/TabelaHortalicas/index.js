@@ -16,9 +16,9 @@ function TabelaHortalicas({getData, acoes,handleUpdateTable}) {
     useEffect(() => {
          async function carregaHortalicas() {
             setLoadingTable(true);
-             const data  = await getData();
-             setLista(data);
-             setLoadingTable(false);
+            const data  = await getData();
+            setLista(data);
+            setLoadingTable(false);
          }
          carregaHortalicas();
     
