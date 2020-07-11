@@ -7,8 +7,10 @@ import Titulo from '../../components/Titulo';
 import {showConfirm} from '../../components/ConfirmAcao';
 import { notificarSucesso, notificarErro } from '../../components/Notificacao';
 import {DeleteOutlined,EditOutlined } from '@ant-design/icons';
+import FooterButtons from '../../components/FooterButtons';
 import api from '../../../service/api';
 import './index.css';
+import { isFuncionarioLogado } from '../../../service/usuario';
 
 const { Item } = Breadcrumb;
 const { Group } = Radio;
@@ -113,7 +115,7 @@ function Usuarios() {
                 <Divider />
                 <TabelaUsuarios getData={carregaUsuarios} acoes={acoes} handleUpdateTable/>
                 <Divider />
-                <Button type='primary' onClick={openModal}>Cadastrar</Button>
+                <FooterButtons label1='Cadastrar' visible1={isFuncionarioLogado()} callback1={openModal} visible2={false}/>               
                 <Modal
                     visible={modalVisible}
                     title="Tipo de Cadastro!"

@@ -7,8 +7,11 @@ import { Divider, Button, Modal, Form, DatePicker } from 'antd';
 import { showConfirm } from '../../components/ConfirmAcao';
 import { notificarErro, notificarSucesso } from '../../components/Notificacao';
 import { getKeyUsuarioLogado, isFuncionarioLogado, isClienteLogado } from '../../../service/usuario';
+import FooterButtons from '../../components/FooterButtons';
 import api from '../../../service/api';
+import {useHistory} from 'react-router-dom';
 const { Item } = Breadcrumb;
+
 
 function Pedidos() {
 
@@ -18,6 +21,7 @@ function Pedidos() {
     const [data, setData] = useState('');
     const [dateString, setDateString] = useState('');
     const [pedido, setPedido] = useState({});
+    const history = useHistory();
 
     useEffect(() => {
     }, []);
@@ -39,7 +43,7 @@ function Pedidos() {
                     style={{ margin: '1px' }}
                     icon={<SearchOutlined />}
                     title='Ver Pedido'
-                    onClick={_ => { visualizarPedido(record) }}
+                    onClick={_ => { handlerVisualizar(record.key) }}
                 />
                 {record.status !== 'CANCELADO' &&
                     <Button
@@ -66,10 +70,6 @@ function Pedidos() {
             </span>
         )
     };
-
-    const visualizarPedido = pedido => {
-        alert(pedido.id);
-    }
 
     const cancelarPedido = async (key) => {
         try {
@@ -146,6 +146,20 @@ function Pedidos() {
         }
     }
 
+    const handlerCadastrar = () => {
+        history.push({
+            pathname:'/perfilPedidos',
+            search:'?cadastro=1' 
+        });
+    }
+
+    const handlerVisualizar = (key) => {
+        history.push({
+            pathname:'/perfilPedidos',
+            search:`?cadastro=0&key=${key}` 
+        });
+    }
+
     return (
         <div>
             <Breadcrumb>
@@ -153,13 +167,11 @@ function Pedidos() {
                 <Item active>Pedidos</Item>
             </Breadcrumb>
             <Container>
-                <Titulo name="Pedidos" />
+                <Titulo nome="Pedidos" />
                 <Divider />
                 <TabelaPedidos getData={buscarPedidos} acoes={acoes} handlerUpdateTable={handlerUpdateTable} />
                 <Divider />
-                {isClienteLogado() &&
-                    <Button type='primary' href='/perfilPedidos'>Cadastrar</Button>
-                }
+                <FooterButtons label1='Cadastrar' label2='Voltar' callback1={handlerCadastrar} callback2={history.goBack} visible1={isClienteLogado()} visible2={false}/>
             </Container>
             <Modal
                 title="Data do Pedido"

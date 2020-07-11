@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowRightOutlined, DeleteOutlined } from '@ant-design/icons';
 import {
     Form,
@@ -15,30 +15,68 @@ import { Breadcrumb, Container } from 'react-bootstrap';
 import Titulo from '../../components/Titulo';
 import TabelaHortalicas from '../../components/TabelaHortalicas';
 import api from '../../../service/api';
-import {showConfirm} from '../../components/ConfirmAcao';
-import {notificarErro,notificarSucesso} from '../../components/Notificacao';
-import {getKeyUsuarioLogado} from '../../../service/usuario';
+import { showConfirm } from '../../components/ConfirmAcao';
+import { notificarErro, notificarSucesso } from '../../components/Notificacao';
+import { getKeyUsuarioLogado } from '../../../service/usuario';
 import { useHistory } from 'react-router-dom';
+import FooterButtons from "../../components/FooterButtons";
 const { Item } = Breadcrumb;
 
 
-function PerfilPedidos() {
+function PerfilPedidos({ location }) {
 
     const [data, setData] = useState('');
     const [quantidade, setQuantidade] = useState(1);
     const [pedido, setPedido] = useState([]);
     const [dateString, setDateString] = useState('');
     const [hortalica, setHortalica] = useState({});
-    const [valorTotal,setValorTotal] = useState(0);
-
+    const [valorTotal, setValorTotal] = useState(0);
     const historico = useHistory();
-
     const loading = false;
-
     const [visible, setVisible] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
-
     const [handlerUpdateTable, setHandlerUpdateTable] = useState(false);
+
+    const [cadastro, setCadastro] = useState(false);
+    const [keyPedido, setKeyPedido] = useState('');
+    const pedidoVisualizacao = {};
+
+
+    useEffect(() => {
+        async function verificaParams() {
+            const params = new URLSearchParams(location.search);
+            const tipo = params.get('cadastro');
+            const key = params.get('key');
+            setCadastro(true);
+            if (tipo === '0') {
+                setKeyPedido(key);
+                setCadastro(false);
+                const { data } = await api.get(`/pedido/${key}`);
+                const ped = data.pedido;
+                setDateString(ped.data);
+                setKeyPedido(key);
+               
+                const tam = ped.hortalicas.length;
+                let i = 0;
+                let somatorio = 0;
+                while(i < tam){
+                    const hort = ped.hortalicas[i];
+                    if ( hort.quantidade <= 0) {
+                        notificarErro('Quantidade inválida.');
+                    } else {
+                        somatorio = somatorio + (hort.valor * hort.quantidade);
+                    }
+                    setPedido(ped.hortalicas);
+                    setValorTotal(somatorio);
+                    console.log(hort);
+                    i++;
+                }
+    
+                
+            }
+        }
+        verificaParams();
+    }, [location]);
 
     const acoes = {
         title: 'Inserir',
@@ -120,33 +158,55 @@ function PerfilPedidos() {
         setVisible(false);
     };
 
-    const salvarPedido = async() => {
+    const salvarPedido = async () => {
         let listaHortalicas = [];
         await pedido.forEach((pedido) => {
-            listaHortalicas = [...listaHortalicas,{
-                keyHortalica:pedido.key,
+            listaHortalicas = [...listaHortalicas, {
+                keyHortalica: pedido.key,
                 quantidade:
-                pedido.quantidade
+                    pedido.quantidade
             }];
         });
 
         const pedidoRequisicao = {
-            data:dateString,
-            hortalicas:listaHortalicas
+            data: dateString,
+            hortalicas: listaHortalicas
         };
-        try{
-            await api.post('/pedido',pedidoRequisicao,{params:{keyUsuario:getKeyUsuarioLogado()}});
+        try {
+            await api.post('/pedido', pedidoRequisicao, { params: { keyUsuario: getKeyUsuarioLogado() } });
             notificarSucesso('Pedido cadastrado com sucesso.');
             historico.push('/pedidos');
-        }catch(e){
+        } catch (e) {
+            notificarErro(e.response.data.mensagem);
+        }
+    }
+    const atualizarPedido = async () => {
+        let listaHortalicas = [];
+        await pedido.forEach((pedido) => {
+            listaHortalicas = [...listaHortalicas, {
+                keyHortalica: pedido.key,
+                quantidade:
+                    pedido.quantidade
+            }];
+        });
+
+        const pedidoRequisicao = {
+            hortalicas: listaHortalicas
+        };
+
+        try {
+            await api.put(`/pedido/${keyPedido}`, pedidoRequisicao, { params: { keyUsuario: getKeyUsuarioLogado() } });
+            notificarSucesso('Pedido Atualizado com sucesso.');
+            historico.push('/pedidos');
+        } catch (e) {
             notificarErro(e.response.data.mensagem);
         }
     }
 
     const inserirHortalica = () => {
-        if(quantidade <= 0){
+        if (quantidade <= 0) {
             notificarErro('Quantidade inválida.');
-        }else{
+        } else {
             let possui = false;
             pedido.forEach((hort) => {
                 if (hort.key === hortalica.key) {
@@ -154,7 +214,7 @@ function PerfilPedidos() {
                 }
             });
             if (!possui) {
-                setPedido([...pedido, {...hortalica,quantidade}])
+                setPedido([...pedido, { ...hortalica, quantidade}])
                 setValorTotal(valorTotal + (hortalica.valor * quantidade));
                 setHandlerUpdateTable(!handlerUpdateTable);
                 setQuantidade(1);
@@ -162,6 +222,7 @@ function PerfilPedidos() {
                 openNotification('Aviso!', 'A hortaliça já foi adicionada!');
             }
             handleCancel();
+            
         }
     }
 
@@ -170,26 +231,26 @@ function PerfilPedidos() {
         let valorReferencia = 0;
         pedido.forEach((hort) => {
             if (hort.key !== key) {
-              pedidoAux = [...pedidoAux,hort];
-            }else{
-                valorReferencia = hort.valor*hort.quantidade;
+                pedidoAux = [...pedidoAux, hort];
+            } else {
+                valorReferencia = hort.valor * hort.quantidade;
             }
         });
-        showConfirm('Remover hortaliça',`Deseja remover a hortaliça de código: ${key}?`,atualizarPedido,{pedidoAux,valorReferencia});
+        showConfirm('Remover hortaliça', `Deseja remover a hortaliça de código: ${key}?`, atualizarValorPedido, { pedidoAux, valorReferencia });
     }
 
-    const atualizarPedido = async ({pedidoAux,valorReferencia}) => {
-       await setPedido(pedidoAux);
-       setValorTotal(valorTotal - valorReferencia);
+    const atualizarValorPedido = async ({ pedidoAux, valorReferencia }) => {
+        await setPedido(pedidoAux);
+        setValorTotal(valorTotal - valorReferencia);
     }
 
 
-    const getPedidos = () =>{
+    const getPedidos = () => {
         return pedido;
     }
 
     const getHortalicas = async () => {
-        const {data} = await api.get('/hortalica');
+        const { data } = await api.get('/hortalica');
         return data;
     }
 
@@ -204,59 +265,65 @@ function PerfilPedidos() {
             <Breadcrumb>
                 <Item href="/">Principal</Item>
                 <Item href="/pedidos">Pedidos</Item>
-                <Item active >Cadastrar</Item>
+                {cadastro && <Item active>Cadastrar</Item>}
+                {!cadastro && <Item active>Visualizar</Item>}
             </Breadcrumb>
-            <Container>
-                <Titulo name='Cadastro de Pedidos' />
+        <Container>
+            {cadastro && <Titulo nome='Cadastro de Pedido' />}
+            {!cadastro && <Titulo nome='Visualizar de Pedido' />}
+            {cadastro && <div>
                 <Divider />
                 <h2>Hortaliças</h2>
                 <TabelaHortalicas getData={getHortalicas} acoes={acoes} />
                 <Divider />
-                <h2>Pedido</h2>
-                <TabelaHortalicas getData={getPedidos} acoes={acoesPedido} handleUpdateTable/>
-                <Divider />
+            </div>}
+            <h2>Pedido</h2>
+            <TabelaHortalicas getData={getPedidos} acoes={acoesPedido} handleUpdateTable />
+            <Divider />
+            <Form {...layout}>
+                <Form.Item
+                    {...tailLayout}
+                    label='Valor Total: '>
+                    <Input readOnly value={valorTotal} />
+                </Form.Item>
+                <Form.Item
+                    {...tailLayout}
+                    label='Data: '>
+                    {cadastro && <DatePicker value={data} onChange={onChangeData} format={'DD/MM/YYYY'} locale={'pt-BR'} />}
+                    {!cadastro && <Input readOnly value={dateString}/>}
+                </Form.Item>
+            </Form>
+            {cadastro && <FooterButtons label1='Salvar' label2='Voltar' callback1={salvarPedido} callback2={historico.goBack} />}
+            {!cadastro && <FooterButtons label1='Atualizar' label2='Cancelar' callback1={atualizarPedido} callback2={historico.goBack} />}
+            <Modal
+                title="Quantidade"
+                visible={visible}
+                onOk={handleOk}
+                confirmLoading={confirmLoading}
+                onCancel={handleCancel}
+                footer={[
+                    <Button key="back" onClick={handleCancel}>
+                        Cancelar
+                            </Button>,
+                    <Button key="submit" type="primary" loading={loading} onClick={inserirHortalica}>
+                        Adicionar
+                            </Button>,
+                ]}
+
+            >
                 <Form {...layout}>
-                    <Form.Item
-                        {...tailLayout}
-                        label='Valor Total: '>
-                        <Input readOnly value={valorTotal}/>
-                    </Form.Item>
-                    <Form.Item
-                        {...tailLayout}
-                        label='Data: '>
-                        <DatePicker value={data} onChange={onChangeData} format={'DD/MM/YYYY'} locale={'pt-BR'}/>
+                    <Form.Item {...tailLayout}
+                        label='Quantidade: '
+                    >
+                        <InputNumber min={1} onChange={(value) => {
+                            setQuantidade(value);
+                        }} value={quantidade} />
                     </Form.Item>
                 </Form>
-                <Button type='primary  ' onClick={salvarPedido}>Salvar</Button>
-                <Modal
-                    title="Quantidade"
-                    visible={visible}
-                    onOk={handleOk}
-                    confirmLoading={confirmLoading}
-                    onCancel={handleCancel}
-                    footer={[
-                        <Button key="back" onClick={handleCancel}>
-                          Cancelar
-                        </Button>,
-                        <Button key="submit" type="primary" loading={loading} onClick={inserirHortalica}>
-                          Adicionar
-                        </Button>,
-                      ]}
-                    
-                    >
-                    <Form {...layout}>
-                        <Form.Item {...tailLayout}
-                            label='Quantidade: '
-                        >
-                        <InputNumber min={1} onChange={(value) =>{
-                            setQuantidade(value);
-                        }} value={quantidade}/>
-                        </Form.Item>
-                    </Form>
-                </Modal>
-                <Divider />
-            </Container>
-        </div>
+            </Modal>
+            <Divider />
+        </Container>
+        </div >
     );
 }
 export default PerfilPedidos;

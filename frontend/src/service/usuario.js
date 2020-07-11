@@ -8,7 +8,7 @@ const isFuncionarioLogado = () => {
 }
 
 const isClienteLogado = () => {
-    return !isFuncionarioLogado();
+    return true;
 }
 
 export {getKeyUsuarioLogado,isFuncionarioLogado,isClienteLogado};
