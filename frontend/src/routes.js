@@ -7,11 +7,12 @@ import Hortalicas from './protected/pages/Hortalicas';
 import PerfilUsuario from './protected/pages/Usuarios/perfil';
 import PerfilHortalica from './protected/pages/Hortalicas/perfil';
 import PerfilPedidos from './protected/pages/Pedidos/perfil';
+import Login from './login';
 function Rotas() {
     return (
         <Router>
             <Switch>
-                <Route exact path='/' component={Pedidos} />
+                <Route exact path='/' component={Login} />
                 <Route path='/pedidos' component={Pedidos} />
                 <Route path='/usuarios' component={Usuarios} />
                 <Route path='/hortalicas' component={Hortalicas} />

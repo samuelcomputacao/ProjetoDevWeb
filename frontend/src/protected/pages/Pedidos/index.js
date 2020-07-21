@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import TabelaPedidos from '../../components/TabelaPedidos';
 import Titulo from '../../components/Titulo';
-import { CloseOutlined, SearchOutlined, ReloadOutlined } from '@ant-design/icons';
+import { CloseOutlined, SearchOutlined, ReloadOutlined, CheckOutlined} from '@ant-design/icons';
 import { Container, Breadcrumb } from 'react-bootstrap';
 import { Divider, Button, Modal, Form, DatePicker } from 'antd';
 import { showConfirm } from '../../components/ConfirmAcao';
@@ -45,7 +45,7 @@ function Pedidos() {
                     title='Ver Pedido'
                     onClick={_ => { handlerVisualizar(record.key) }}
                 />
-                {record.status !== 'CANCELADO' &&
+                {record.status === 'REALIZADO' &&
                     <Button
                         type='primary'
                         style={{ margin: '1px' }}
@@ -58,12 +58,21 @@ function Pedidos() {
                         }
                     />
                 }
-                {(record.status !== 'REALIZADO' && isClienteLogado()) &&
+                {(record.status === 'FINALIZADO' && isClienteLogado()) &&
+                    <Button
+                        type='primary'
+                        style={{ margin: '1px'}}
+                        title='Repetir Pedido'
+                        icon={<ReloadOutlined />}
+                        onClick={_ => { repetirPedido(record) }}
+                    />
+                }
+                {(record.status === 'REALIZADO' && isFuncionarioLogado()) &&
                     <Button
                         type='primary'
                         style={{ margin: '1px' }}
-                        title='Repetir Pedido'
-                        icon={<ReloadOutlined />}
+                        title='Aceitar Pedido'
+                        icon={<CheckOutlined />}
                         onClick={_ => { repetirPedido(record) }}
                     />
                 }
@@ -137,9 +146,15 @@ function Pedidos() {
     };
 
     const onChangeData = (date, dateString) => {
-        const dataSelecionada = Date.parse(dateString);
-        if (Date.now() >= dataSelecionada) {
-            notificarErro('Data Inválida.');
+        const dataSelecionada = new Date(date).getTime();
+        const dataAtual = new Date().getTime();
+        if (dataSelecionada < dataAtual) {
+            if(dataSelecionada === 0){
+                setData('');
+                setDateString('');
+            }else{
+                notificarErro('Data Inválida.');
+            }
         } else {
             setData(date);
             setDateString(dateString);

@@ -6,8 +6,8 @@ import Menu from './protected/components/Menu';
 function App() {
   return (
     <div>
-      <Menu></Menu>
-      <Rotas></Rotas>
+      <Menu/>
+      <Rotas/>
     </div>
 
   );
