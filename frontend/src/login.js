@@ -3,6 +3,9 @@ import 'antd/dist/antd.css';
 import { Container } from 'react-bootstrap';
 import { Form, Input, Button, Checkbox, Divider } from 'antd';
 import Titulo from './protected/components/Titulo';
+import api from '../src/service/api';
+import {notificarErro} from '../src/protected/components/Notificacao';
+import {useHistory} from 'react-router-dom';
 
 const layout = {
     labelCol: {
@@ -26,8 +29,17 @@ const forgoutLayout = {
 }
 
 const Login = () => {
-    const onFinish = values => {
-        console.log('Success:', values);
+    const history = useHistory();
+    const onFinish = async values => {
+        try{
+            const {cpfCnpj,senha} = values;
+            const {data} = await api.get('/login',{params:{cpfCnpj,senha}});
+            const {token} =  data;
+            sessionStorage.setItem('token',token);
+            history.push('/pedidos');
+        }catch(e){
+            notificarErro(e.response.data.mensagem);
+        }
     };
 
     const onFinishFailed = errorInfo => {
@@ -49,12 +61,12 @@ const Login = () => {
                     onFinishFailed={onFinishFailed}
                 >
                     <Form.Item
-                        label="Email"
-                        name="email"
+                        label="Cpf/Cnpj"
+                        name="cpfCnpj"
                         rules={[
                             {
                                 required: true,
-                                message: 'O email é obrigatório!',
+                                message: 'O CpfCnpj é obrigatório!',
                             },
                         ]}
                     >

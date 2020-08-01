@@ -11,4 +11,10 @@ const isClienteLogado = () => {
     return true;
 }
 
-export {getKeyUsuarioLogado,isFuncionarioLogado,isClienteLogado};
+const verificaSessao = async () => {
+    const token = sessionStorage.getItem('token');
+    console.log(token);
+    return true;
+}
+
+export {getKeyUsuarioLogado,isFuncionarioLogado,isClienteLogado,verificaSessao};

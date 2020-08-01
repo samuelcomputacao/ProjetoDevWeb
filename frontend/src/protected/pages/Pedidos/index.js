@@ -6,7 +6,7 @@ import { Container, Breadcrumb } from 'react-bootstrap';
 import { Divider, Button, Modal, Form, DatePicker } from 'antd';
 import { showConfirm } from '../../components/ConfirmAcao';
 import { notificarErro, notificarSucesso } from '../../components/Notificacao';
-import { getKeyUsuarioLogado, isFuncionarioLogado, isClienteLogado } from '../../../service/usuario';
+import { getKeyUsuarioLogado, isFuncionarioLogado, isClienteLogado,verificaSessao} from '../../../service/usuario';
 import FooterButtons from '../../components/FooterButtons';
 import api from '../../../service/api';
 import {useHistory} from 'react-router-dom';
@@ -25,6 +25,8 @@ function Pedidos() {
 
     useEffect(() => {
     }, []);
+
+   
 
     const buscarPedidos = async () => {
         const { data } = await api.get('/pedido', { params: { keyUsuario: getKeyUsuarioLogado() } });

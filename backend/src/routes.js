@@ -5,6 +5,7 @@ const routes  = express.Router();
 const hortalicaController = require('./controllers/hortalicaController');
 const usuarioController = require('./controllers/usuarioController');
 const pedidoController = require('./controllers/pedidoController');
+const loginController = require('./controllers/loginController');
 
 //Rotas de Hortaliças
 routes.get('/hortalica',hortalicaController.index);
@@ -29,9 +30,8 @@ routes.post('/pedido/renovar/:key',pedidoController.renovar);
 routes.delete('/pedido/:key',pedidoController.delete);
 routes.put('/pedido/:key',pedidoController.update);
 
-
-
-
-
+//Rotas de Login
+routes.get('/login',loginController.login);
+routes.get('/verificaToken',loginController.verificaLogin);
 
 module.exports = routes;

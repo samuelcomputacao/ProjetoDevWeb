@@ -135,7 +135,6 @@ function FormUsuario({ atualizar, keyUsuario, tipoUsuario }) {
         const regexCnpj = '^[0-9]{3}[.][0-9]{3}[.][0-9]{3}[/][0-9]{4}[-][0-9]{2}$';
 
         if (value) {
-            console.log('Tipo: ' + tipoUsuario);
             if (tipoUsuario === 0) {
                 if (value.match(regexCpf)) {
                     return Promise.resolve();
@@ -144,7 +143,6 @@ function FormUsuario({ atualizar, keyUsuario, tipoUsuario }) {
                 }
             } else if (tipoUsuario === 1) {
                 if (value.match(regexCnpj)) {
-                    console.log('math cnpj');
                     return Promise.resolve();
                 } else {
                     return Promise.reject('O Cnpj não se encontra no formato: xxx.xxx.xxx/xxxx-xx');
