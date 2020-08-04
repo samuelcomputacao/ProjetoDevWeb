@@ -39,8 +39,6 @@ function PerfilPedidos({ location }) {
 
     const [cadastro, setCadastro] = useState(false);
     const [keyPedido, setKeyPedido] = useState('');
-    const pedidoVisualizacao = {};
-
 
     useEffect(() => {
         async function verificaParams() {

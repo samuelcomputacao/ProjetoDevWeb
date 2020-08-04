@@ -1,3 +1,4 @@
+const TOKEN = 'token';
 
 const getKeyUsuarioLogado = () =>{
     return 3;
@@ -11,10 +12,13 @@ const isClienteLogado = () => {
     return true;
 }
 
-const verificaSessao = async () => {
-    const token = sessionStorage.getItem('token');
-    console.log(token);
-    return true;
+const getToken = async () => {
+    const token = sessionStorage.getItem(TOKEN);
+    return token;
 }
 
-export {getKeyUsuarioLogado,isFuncionarioLogado,isClienteLogado,verificaSessao};
+const sair = () => {
+    sessionStorage.removeItem(TOKEN);
+}
+
+export {getKeyUsuarioLogado,isFuncionarioLogado,isClienteLogado,getToken,sair};

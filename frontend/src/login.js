@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import 'antd/dist/antd.css';
 import { Container } from 'react-bootstrap';
-import { Form, Input, Button, Checkbox, Divider } from 'antd';
+import { Form, Input, Button, Divider } from 'antd';
 import Titulo from './protected/components/Titulo';
 import api from '../src/service/api';
-import {notificarErro} from '../src/protected/components/Notificacao';
-import {useHistory} from 'react-router-dom';
+import { getToken } from '../src/service/usuario';
+import { notificarErro } from '../src/protected/components/Notificacao';
+import { useHistory } from 'react-router-dom';
 
 const layout = {
     labelCol: {
@@ -22,22 +23,37 @@ const tailLayout = {
     },
 };
 
-const forgoutLayout = {
-    wrapperCol: {
-        offset: 5,
-    },
-}
-
 const Login = () => {
+
     const history = useHistory();
+
+    useEffect(() => {
+        const vefificaToken = async () => {
+            try {
+                const token = await getToken();
+                if (token) {
+                    const { data } = await api.get('/verificaToken', { params: { Authentication: token } });
+                    const { auth } = data;
+                    if (auth === true) {
+                        history.push('/pedidos');
+                    }
+                }
+            } catch (e) {
+
+            }
+        }
+        vefificaToken();
+    }, [history]);
+
+
     const onFinish = async values => {
-        try{
-            const {cpfCnpj,senha} = values;
-            const {data} = await api.get('/login',{params:{cpfCnpj,senha}});
-            const {token} =  data;
-            sessionStorage.setItem('token',token);
+        try {
+            const { cpfCnpj, senha } = values;
+            const { data } = await api.get('/login', { params: { cpfCnpj, senha } });
+            const { token } = data;
+            sessionStorage.setItem('token', token);
             history.push('/pedidos');
-        }catch(e){
+        } catch (e) {
             notificarErro(e.response.data.mensagem);
         }
     };
@@ -45,6 +61,10 @@ const Login = () => {
     const onFinishFailed = errorInfo => {
         console.log('Failed:', errorInfo);
     };
+
+    const redirectResetPassword = () => {
+        history.push('/resetPassword');
+    }
 
     return (
         <div>
@@ -85,12 +105,12 @@ const Login = () => {
                     >
                         <Input.Password />
                     </Form.Item>
-                
+
                     <Form.Item {...tailLayout}>
-                        <Button type="primary" htmlType="submit" style={{margin:'2px'}}>
+                        <Button type="primary" htmlType="submit" style={{ margin: '2px' }}>
                             Entrar
                         </Button>
-                        <Button type="danger" htmlType="button">
+                        <Button type="danger" htmlType="button" onClick={redirectResetPassword}>
                             Esqueceu a senha?
                         </Button>
                     </Form.Item>

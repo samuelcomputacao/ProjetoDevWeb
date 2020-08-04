@@ -1,6 +1,7 @@
 
 const { response, request } = require('express');
 const {getToken,verificaToken}  = require('../service/loginService');
+const connection = require('../database/connection');
 
 
 module.exports = {
@@ -15,10 +16,20 @@ module.exports = {
 
     async verificaLogin(request,response){
         const {Authentication} = request.query;
-        const result  = verificaToken(Authentication);
+        const result  = await verificaToken(Authentication);
         if(result){
-            return response.status(200).send();
+            return response.json({auth:true});
         }
         return response.status(500).json({mensagem:"Sessão encerrada."});   
+    },
+
+    async resetPassword(request,response){
+        const {cpfCnpj,senha} = request.body;
+        const usuario = await connection('usuario').where('cpfCnpj','=',cpfCnpj).select('*').first();
+        if(usuario){
+            await connection('usuario').where('cpfCnpj','=',cpfCnpj).update('senha',senha);
+            return response.status(200).send();
+        }
+        return response.status(500).json({mensagem:"Cpf/Cnpj não cadastrado ou sem formatação."});   
     }
 }

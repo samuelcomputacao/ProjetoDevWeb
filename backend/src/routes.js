@@ -33,5 +33,6 @@ routes.put('/pedido/:key',pedidoController.update);
 //Rotas de Login
 routes.get('/login',loginController.login);
 routes.get('/verificaToken',loginController.verificaLogin);
+routes.post('/resetPassword',loginController.resetPassword);
 
 module.exports = routes;

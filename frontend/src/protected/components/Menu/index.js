@@ -1,9 +1,9 @@
 import React from 'react';
 import { Navbar, Nav, Form, Button } from 'react-bootstrap';
 import { Avatar } from 'antd';
-import { isFuncionarioLogado, isClienteLogado } from '../../../service/usuario';
+import { isFuncionarioLogado, sair} from '../../../service/usuario';
 
-function Menu() {
+function Menu() {   
     return (
         <Navbar bg="success" expand="lg">
             <Navbar.Brand href="/">HortSystem</Navbar.Brand>
@@ -23,7 +23,11 @@ function Menu() {
                         </Nav.Link>
                     </Nav>
 
-                    <Button variant="light">Sair</Button>
+                    <Button variant="light" href={'/'} onClick={
+                        ()=>{
+                            sair();                            
+                        }
+                    }>Sair</Button>
                 </Form>
             </Navbar.Collapse>
         </Navbar>);
