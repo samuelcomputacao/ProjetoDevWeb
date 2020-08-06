@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Select, InputNumber, Button, Input, Divider} from 'antd';
+import { Form, Select, InputNumber, Button, Input, Divider } from 'antd';
 import { notificarErro, notificarSucesso } from '../Notificacao';
 import { useHistory } from 'react-router-dom';
 import api from '../../../service/api';
 
-function FormHortalica({ keyHortalica , atualizar}) {
+function FormHortalica({ keyHortalica, atualizar }) {
 
     const history = useHistory();
 
@@ -18,8 +18,8 @@ function FormHortalica({ keyHortalica , atualizar}) {
 
     useEffect(() => {
         async function buscarHortalica() {
-            if(atualizar){
-                if(keyHortalica){
+            if (atualizar) {
+                if (keyHortalica) {
                     try {
                         const { data } = await api.get(`/hortalica/${keyHortalica}`)
                         await setHortalica(data);
@@ -32,7 +32,7 @@ function FormHortalica({ keyHortalica , atualizar}) {
             }
         }
         buscarHortalica();
-    }, [atualizar,keyHortalica]);
+    }, [atualizar, keyHortalica]);
 
     const onFormLayoutChange = ({ size }) => {
         console.log('formChange');
@@ -41,6 +41,9 @@ function FormHortalica({ keyHortalica , atualizar}) {
     const onFinish = async values => {
         setLoadingSalvar(true);
         const { nome, categoria, valor } = values;
+        if (valor <= 0) {
+            notificarErro('Valor inválido.');
+        }
         try {
             await api.post('/hortalica', { nome, categoria, valor });
             notificarSucesso('Hortaliça cadastrada.')
@@ -99,10 +102,10 @@ function FormHortalica({ keyHortalica , atualizar}) {
                     name='basic'
                     initialValues={{
                         remember: true,
-                        nome: 'nomeeee',
+                        nome: hortalica.nome,
                         categoria: hortalica.categoria,
                         valor: hortalica.valor,
-                        key:hortalica.key
+                        key: hortalica.key
                     }}
                     onFinish={onFinishEdit}
                     onFinishFailed={onFinishFailed}
@@ -143,12 +146,23 @@ function FormHortalica({ keyHortalica , atualizar}) {
                             {
                                 required: true,
                                 message: 'O valor é obrigatoria!',
-                            }]}
+                            },
+                            () => ({
+                                validator(_, value) {
+                                    if (value) {
+                                        if ( value < 0) {
+                                            return Promise.reject('O Valor é inválido.');
+                                        }
+                                    }
+                                    return Promise.resolve();
+                                },
+                            }),
+                        ]}
                     >
                         <InputNumber defaultValue={0} />
                     </Form.Item>
                     <Form.Item {...tailLayout}>
-                        <Divider/>
+                        <Divider />
                         <Button
                             type="primary"
                             htmlType="submit"
@@ -221,7 +235,7 @@ function FormHortalica({ keyHortalica , atualizar}) {
                     <InputNumber defaultValue={0} />
                 </Form.Item>
                 <Form.Item {...tailLayout}>
-                    <Divider/>
+                    <Divider />
                     <Button
                         type="primary"
                         htmlType="submit"

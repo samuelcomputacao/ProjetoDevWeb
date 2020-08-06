@@ -1,9 +1,23 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navbar, Nav, Form, Button } from 'react-bootstrap';
 import { Avatar } from 'antd';
-import { isFuncionarioLogado, sair} from '../../../service/usuario';
+import { isFuncionarioLogado, sair, getUsuarioCorrente } from '../../../service/usuario';
+import { UserOutlined } from '@ant-design/icons';
 
-function Menu() {   
+function Menu() {
+
+    const [linkAvatar, setLinkAvatar] = useState('');
+
+    useEffect(() => {
+        const getAvatar = async () => {
+            const avatar = await getUsuarioCorrente();
+            if (avatar) {
+                setLinkAvatar(avatar);
+            }
+        }
+        getAvatar();
+    }, []);
+
     return (
         <Navbar bg="success" expand="lg">
             <Navbar.Brand href="/">HortSystem</Navbar.Brand>
@@ -19,13 +33,16 @@ function Menu() {
                 <Form inline>
                     <Nav className="mr-auto">
                         <Nav.Link href="/home">
-                            <Avatar size={40} src="https://avatars3.githubusercontent.com/u/37349965?s=460&u=2817736bcc93cbf543c3a88cdbbbb7c7f0fa14db&v=4" />
+                            <div>
+                                {linkAvatar && <Avatar size={40} src={linkAvatar} />}
+                                {!linkAvatar && <Avatar size={40} icon={<UserOutlined />} />}
+                            </div>
                         </Nav.Link>
                     </Nav>
 
                     <Button variant="light" href={'/'} onClick={
-                        ()=>{
-                            sair();                            
+                        () => {
+                            sair();
                         }
                     }>Sair</Button>
                 </Form>

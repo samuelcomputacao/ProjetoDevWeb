@@ -18,6 +18,7 @@ routes.put('/hortalica/:key',hortalicaController.update);
 //Rotas de Usuários
 routes.get('/usuario',usuarioController.index);
 routes.get('/usuario/:key',usuarioController.findById);
+routes.get('/usuarioToken',usuarioController.findByToken);
 routes.post('/usuario',usuarioController.create);
 routes.delete('/usuario/:key',usuarioController.delete);
 routes.put('/usuario/:key',usuarioController.update);

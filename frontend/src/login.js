@@ -4,7 +4,7 @@ import { Container } from 'react-bootstrap';
 import { Form, Input, Button, Divider } from 'antd';
 import Titulo from './protected/components/Titulo';
 import api from '../src/service/api';
-import { getToken } from '../src/service/usuario';
+import { getToken, setToken } from '../src/service/usuario';
 import { notificarErro } from '../src/protected/components/Notificacao';
 import { useHistory } from 'react-router-dom';
 
@@ -51,13 +51,13 @@ const Login = () => {
             const { cpfCnpj, senha } = values;
             const { data } = await api.get('/login', { params: { cpfCnpj, senha } });
             const { token } = data;
-            sessionStorage.setItem('token', token);
+            setToken(token);
             history.push('/pedidos');
+            window.location.reload();
         } catch (e) {
             notificarErro(e.response.data.mensagem);
-        }
+        }   
     };
-
     const onFinishFailed = errorInfo => {
         console.log('Failed:', errorInfo);
     };

@@ -16,13 +16,21 @@ module.exports = {
     },
 
     async verificaToken(token) {
+        const usuario = await this.getUsuario(token);
+        if (usuario) {   
+            return true;
+        }
+        return false;
+    },
+
+    async getUsuario(token){
         if (token) {
             const { id } = jwt.verify(token, CHAVE);
             const usuario = await connection('usuario').where('key', '=', id).select('*').first();
             if (usuario) {
-                return true;
+                return usuario;
             }
         }
-        return false;
+        return undefined;
     }
 }

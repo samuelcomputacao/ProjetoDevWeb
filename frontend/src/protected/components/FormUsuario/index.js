@@ -6,8 +6,10 @@ import {
     Button,
     Select,
     Input,
-    Divider
+    Divider,
+    Avatar
 } from 'antd';
+import { UserOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router-dom';
 
 function FormUsuario({ atualizar, keyUsuario, tipoUsuario }) {
@@ -17,6 +19,8 @@ function FormUsuario({ atualizar, keyUsuario, tipoUsuario }) {
 
     const [loadingSalvar, setLoadingSalvar] = useState(false);
     const [loadingAtualizar, setloadingAtualizar] = useState(false);
+
+    const [linkAvatar, setLinkAvatar] = useState('');
 
     const categorias = ['FUNCIONARIO', 'CLIENTE'];
     const history = useHistory();
@@ -28,6 +32,7 @@ function FormUsuario({ atualizar, keyUsuario, tipoUsuario }) {
                     try {
                         const { data } = await api.get(`/usuario/${keyUsuario}`);
                         await setUsuario(data);
+                        await setLinkAvatar(data.avatar);
                         setCarregado(true);
                     } catch (e) {
 
@@ -40,9 +45,9 @@ function FormUsuario({ atualizar, keyUsuario, tipoUsuario }) {
 
     const cadastrarUsuario = async (usuario) => {
         setLoadingSalvar(true);
-        const { nome, cpfCnpj, senha, funcao, tipoUsuario } = usuario;
+        const { nome, cpfCnpj, senha, funcao, tipoUsuario, avatar } = usuario;
         try {
-            await api.post('/usuario', { nome, funcao, cpfCnpj, senha, tipoUsuario });
+            await api.post('/usuario', { nome, funcao, cpfCnpj, senha, tipoUsuario, avatar });
             notificarSucesso('O usuário foi cadastrado com sucesso.');
             setLoadingSalvar(false);
             setTimeout(() => {
@@ -57,9 +62,9 @@ function FormUsuario({ atualizar, keyUsuario, tipoUsuario }) {
 
     const editarUsuario = async (usuario) => {
         setloadingAtualizar(true);
-        const { nome, funcao, senha } = usuario;
+        const { nome, funcao, senha, avatar } = usuario;
         try {
-            await api.put(`/usuario/${usuario.key}`, { nome, funcao, senha });
+            await api.put(`/usuario/${usuario.key}`, { nome, funcao, senha, avatar });
             notificarSucesso('O usuário foi atualizado com sucesso.');
             setloadingAtualizar(false);
             setTimeout(() => {
@@ -72,13 +77,9 @@ function FormUsuario({ atualizar, keyUsuario, tipoUsuario }) {
         }
     }
 
-    const onFormLayoutChange = ({ size }) => {
-        console.log('formChange');
-    };
-
     const onFinish = async (values) => {
 
-        const { nome, funcao, cpfCnpj, senha, confirmSenha } = values;
+        const { nome, funcao, cpfCnpj, senha, confirmSenha, avatar } = values;
 
         if (senha !== confirmSenha) {
             notificarErro('As senhas não são iguais');
@@ -89,7 +90,8 @@ function FormUsuario({ atualizar, keyUsuario, tipoUsuario }) {
                 funcao,
                 cpfCnpj,
                 senha,
-                tipoUsuario
+                tipoUsuario,
+                avatar
             };
             cadastrarUsuario(usuarioC);
         }
@@ -97,14 +99,15 @@ function FormUsuario({ atualizar, keyUsuario, tipoUsuario }) {
 
     const onFinishEdit = async (values) => {
         setloadingAtualizar(true);
-        const { nome, funcao, cpfCnpj, senha } = values;
+        const { nome, funcao, cpfCnpj, senha, avatar} = values;
 
         if (nome && funcao && cpfCnpj) {
             const usuarioEdit = {
                 nome,
                 funcao,
                 senha,
-                key: usuario.key
+                key: usuario.key,
+                avatar
             };
             editarUsuario(usuarioEdit);
         }
@@ -162,11 +165,11 @@ function FormUsuario({ atualizar, keyUsuario, tipoUsuario }) {
                         remember: true,
                         nome: usuario.nome,
                         funcao: usuario.funcao,
-                        cpfCnpj: usuario.cpfCnpj
+                        cpfCnpj: usuario.cpfCnpj,
+                        avatar: usuario.avatar
                     }}
                     onFinish={onFinishEdit}
                     onFinishFailed={onFinishFailed}
-                    onValuesChange={onFormLayoutChange}
                     size='larger'>
                     <Form.Item
                         label='Nome'
@@ -226,8 +229,26 @@ function FormUsuario({ atualizar, keyUsuario, tipoUsuario }) {
                         <Input.Password />
                     </Form.Item>
 
+                    <Form.Item
+                        label='Link Avatar'
+                        name="avatar"
+                    >
+                        <Input onChange={(event) => {
+                            setLinkAvatar(event.target.value);
+                        }} />
+                    </Form.Item>
+
+                    <Form.Item
+                        label='Previa Avatar'
+                        name="previaAvatar"
+                    ><div>
+                            {linkAvatar && <Avatar size={100} src={linkAvatar} />}
+                            {!linkAvatar && <Avatar size={100} icon={<UserOutlined />} />}
+                        </div>
+                    </Form.Item>
+
                     <Form.Item {...tailLayout}>
-                        <Divider/>
+                        <Divider />
                         <Button
                             type="primary"
                             htmlType="submit"
@@ -255,7 +276,6 @@ function FormUsuario({ atualizar, keyUsuario, tipoUsuario }) {
                 initialValues={{ remember: true }}
                 onFinish={onFinish}
                 onFinishFailed={onFinishFailed}
-                onValuesChange={onFormLayoutChange}
                 size='larger'>
                 <Form.Item
                     label='Nome'
@@ -338,9 +358,26 @@ function FormUsuario({ atualizar, keyUsuario, tipoUsuario }) {
                 >
                     <Input.Password />
                 </Form.Item>
+                <Form.Item
+                    label='Link Avatar'
+                    name="avatar"
+                >
+                    <Input onChange={(event) => {
+                        setLinkAvatar(event.target.value);
+                    }} />
+                </Form.Item>
+
+                <Form.Item
+                    label='Previa Avatar'
+                    name="previaAvatar"
+                ><div>
+                        {linkAvatar && <Avatar size={100} src={linkAvatar} />}
+                        {!linkAvatar && <Avatar size={100} icon={<UserOutlined />} />}
+                    </div>
+                </Form.Item>
 
                 <Form.Item {...tailLayout}>
-                    <Divider/>
+                    <Divider />
                     <Button
                         type="primary"
                         htmlType="submit"

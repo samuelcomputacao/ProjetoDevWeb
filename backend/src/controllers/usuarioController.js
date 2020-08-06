@@ -1,4 +1,5 @@
 const connection = require('../database/connection');
+const {getUsuario}  = require('../service/loginService');
 
 module.exports = {
 
@@ -16,8 +17,17 @@ module.exports = {
         return response.status(500).json({mensagem:'O Usuário não existe.'});
     },
 
+    async findByToken(request,response){
+        const {Authentication} = request.query;
+        const usuario = await getUsuario(Authentication);
+        if(usuario){
+            return response.status(200).json(usuario);
+        }
+        return response.status(500).json({mensagem:'O Usuário não existe.'});
+    },
+
     async create(request, response){
-        const {nome, cpfCnpj, senha, funcao,tipoUsuario} = request.body;
+        const {nome, cpfCnpj, senha, funcao,tipoUsuario,avatar} = request.body;
         
         const usuarios = await connection('usuario').where('cpfCnpj',cpfCnpj).select('key').first();
         if(usuarios){
@@ -29,14 +39,15 @@ module.exports = {
             cpfCnpj,
             senha,
             funcao,
-            tipoUsuario
+            tipoUsuario,
+            avatar
         });
         return response.json();
     },
 
     async update(request, response){
         const {key} = request.params;
-        const {nome, funcao, senha} = request.body;
+        const {nome, funcao, senha, avatar} = request.body;
         
         if(nome){
             await connection('usuario').where('key','=',key).update('nome',nome);
@@ -46,6 +57,9 @@ module.exports = {
         }
         if(funcao){
             await connection('usuario').where('key','=',key).update('funcao',funcao);
+        }
+        if(avatar){
+            await connection('usuario').where('key','=',key).update('avatar',avatar);
         }
         return response.json();
     },
