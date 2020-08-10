@@ -70,7 +70,6 @@ function Usuarios() {
             pathname: '/perfilUsuario',
             search: `?key=${usuario.key}&tipo=${usuario.tipoUsuario}`
         });
-
     }
 
     const acoes = {

@@ -1,18 +1,30 @@
 import api from './api';
 
 const TOKEN = 'token';
-const USUARIO_AVATAR = 'avatar';
+const AVATAR = 'avatar';
+const USUARIO_KEY = 'key_usuario';
+const USUARIO_TIPO = 'tipo_usuario';
 
-const getKeyUsuarioLogado = () =>{
-    return 3;
+const getKeyUsuarioLogado = async () =>{
+    const key = await sessionStorage.getItem(USUARIO_KEY);
+    return key;
 }
 
-const isFuncionarioLogado = () => {
-    return true;
+const isFuncionarioLogado = async () => {
+    const tipo = await sessionStorage.getItem(USUARIO_TIPO);
+
+    if(tipo==='1'){
+         return true;
+    }
+    return false;
 }
 
-const isClienteLogado = () => {
-    return true;
+const isClienteLogado = async () => {
+    const tipo = await sessionStorage.getItem(USUARIO_TIPO);
+    if(tipo==='0'){
+        return true;
+     }
+    return false;
 }
 
 const getToken = async () => {
@@ -20,23 +32,29 @@ const getToken = async () => {
     return token;
 }
 
-const getUsuarioCorrente = async () => {
-    const usuario = await sessionStorage.getItem(USUARIO_AVATAR);
-    return usuario;
+const getAvatar = async () => {
+    const avatar = await sessionStorage.getItem(AVATAR);
+    return avatar;
 }
 
 const setToken = async (token) => {
-    sessionStorage.setItem(TOKEN,token);
     const {data}= await api.get('/usuarioToken/', {params:{
         Authentication:token
     }});
-    console.log(data);
-    sessionStorage.setItem(USUARIO_AVATAR,data.avatar);
+    sessionStorage.setItem(TOKEN,token);
+    sessionStorage.setItem(AVATAR,data.avatar);
+    sessionStorage.setItem(USUARIO_KEY,data.key);
+    sessionStorage.setItem(USUARIO_TIPO, data.tipoUsuario);
+    window.location.reload();
+}
+
+const getTipoUsuarioLogado = async () => {
+    const tipo = await sessionStorage.getItem(USUARIO_TIPO);
+    return tipo;
 }
 
 const sair = () => {
-    sessionStorage.removeItem(TOKEN);
-    sessionStorage.removeItem(USUARIO_AVATAR);
+    sessionStorage.clear()
 }
 
-export {getKeyUsuarioLogado,isFuncionarioLogado,isClienteLogado,getToken,sair,setToken, getUsuarioCorrente};
+export {getKeyUsuarioLogado,isFuncionarioLogado,isClienteLogado,getToken,sair,setToken, getAvatar,getTipoUsuarioLogado};

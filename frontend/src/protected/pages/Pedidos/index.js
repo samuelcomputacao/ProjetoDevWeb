@@ -6,7 +6,7 @@ import { Container, Breadcrumb } from 'react-bootstrap';
 import { Divider, Button, Modal, Form, DatePicker } from 'antd';
 import { showConfirm } from '../../components/ConfirmAcao';
 import { notificarErro, notificarSucesso } from '../../components/Notificacao';
-import { getKeyUsuarioLogado, isFuncionarioLogado, isClienteLogado} from '../../../service/usuario';
+import { getKeyUsuarioLogado, isClienteLogado} from '../../../service/usuario';
 import FooterButtons from '../../components/FooterButtons';
 import api from '../../../service/api';
 import {useHistory} from 'react-router-dom';
@@ -23,7 +23,16 @@ function Pedidos() {
     const [pedido, setPedido] = useState({});
     const history = useHistory();
 
+    const [clienteLogado, setClienteLogado] = useState(false);
+    const [funcionarioLogado, setFuncionarioLogado] = useState(false);
+
     useEffect(() => {
+        const verificarUsuarioLogado = async () => {
+            const clienteLogado = await isClienteLogado();
+            setClienteLogado(clienteLogado);
+            setFuncionarioLogado(!clienteLogado);
+        }
+        verificarUsuarioLogado();
     }, []);
 
    
@@ -60,7 +69,7 @@ function Pedidos() {
                         }
                     />
                 }
-                {(record.status === 'FINALIZADO' && isClienteLogado()) &&
+                {(record.status === 'FINALIZADO' && clienteLogado) &&
                     <Button
                         type='primary'
                         style={{ margin: '1px'}}
@@ -69,7 +78,7 @@ function Pedidos() {
                         onClick={_ => { repetirPedido(record) }}
                     />
                 }
-                {(record.status === 'REALIZADO' && isFuncionarioLogado()) &&
+                {(record.status === 'REALIZADO' && funcionarioLogado) &&
                     <Button
                         type='primary'
                         style={{ margin: '1px' }}
@@ -188,7 +197,7 @@ function Pedidos() {
                 <Divider />
                 <TabelaPedidos getData={buscarPedidos} acoes={acoes} handlerUpdateTable={handlerUpdateTable} />
                 <Divider />
-                <FooterButtons label1='Cadastrar' label2='Voltar' callback1={handlerCadastrar} callback2={history.goBack} visible1={isClienteLogado()} visible2={false}/>
+                <FooterButtons label1='Cadastrar' label2='Voltar' callback1={handlerCadastrar} callback2={history.goBack} visible1={clienteLogado} visible2={false}/>
             </Container>
             <Modal
                 title="Data do Pedido"

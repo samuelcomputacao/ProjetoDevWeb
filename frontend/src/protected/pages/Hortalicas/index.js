@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Breadcrumb, Container } from 'react-bootstrap';
 import Titulo from '../../components/Titulo';
 import TabelaHortalicas from '../../components/TabelaHortalicas';
@@ -6,13 +6,25 @@ import { showConfirm } from '../../components/ConfirmAcao';
 import { notificarSucesso, notificarErro } from '../../components/Notificacao';
 import { useHistory } from 'react-router-dom';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { isFuncionarioLogado, isClienteLogado } from '../../../service/usuario';
+import {isClienteLogado } from '../../../service/usuario';
 import api from '../../../service/api';
 
 import { Divider, Button } from 'antd';
 const { Item } = Breadcrumb;
 
 function Hortalicas() {
+
+    const [clienteLogado, setClienteLogado] = useState(false);
+    const [funcionarioLogado, setFuncionarioLogado] = useState(false);
+
+    useEffect(() => {
+        const verificarUsuarioLogado = async () => {
+            const clienteLogado = await isClienteLogado();
+            setClienteLogado(clienteLogado);
+            setFuncionarioLogado(!clienteLogado);
+        }
+        verificarUsuarioLogado();
+    }, []);
 
     const history = useHistory();
 
@@ -48,7 +60,7 @@ function Hortalicas() {
         key: 'acoes',
         render: (_, record) => (
             <span>
-                {isFuncionarioLogado() &&
+                {funcionarioLogado &&
                     <div>
                         <Button
                             title={'Editar hortaliça'}
@@ -76,7 +88,7 @@ function Hortalicas() {
                         />
                     </div>
                 }
-                {isClienteLogado() &&
+                {clienteLogado &&
                     <Button
                         type='primary'
                         style={{ marginLeft: '2px' }}
@@ -101,7 +113,7 @@ function Hortalicas() {
                 <Divider />
                 <TabelaHortalicas getData={carregaHortalicas} acoes={acoes} handleUpdateTable />
                 <Divider />
-                {isFuncionarioLogado() &&
+                {funcionarioLogado &&
                     <Button type='primary' href='/perfilHortalica'>Cadastrar</Button>
                 }
             </Container>

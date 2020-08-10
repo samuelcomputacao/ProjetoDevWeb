@@ -259,8 +259,10 @@ function FormUsuario({ atualizar, keyUsuario, tipoUsuario }) {
 
                         <Button
                             type="danger"
-                            href="/usuarios"
                             style={{ marginLeft: '2px' }}
+                            onClick={()=>{
+                                history.goBack();
+                            }}
                         >
                             Cancelar
                         </Button>
@@ -387,7 +389,9 @@ function FormUsuario({ atualizar, keyUsuario, tipoUsuario }) {
                     </Button>
                     <Button
                         type="danger"
-                        href="/usuarios"
+                        onClick={()=>{
+                            history.goBack();
+                        }}
                         style={{ marginLeft: '2px' }}
                     >
                         Cancelar

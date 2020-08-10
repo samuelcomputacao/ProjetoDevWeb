@@ -1,12 +1,13 @@
-import React, { useEffect } from 'react';
+import React, { useEffect,useState } from 'react';
 import 'antd/dist/antd.css';
 import { Container } from 'react-bootstrap';
-import { Form, Input, Button, Divider } from 'antd';
+import { Form, Input, Button, Divider,Modal,Radio } from 'antd';
 import Titulo from './protected/components/Titulo';
 import api from '../src/service/api';
 import { getToken, setToken } from '../src/service/usuario';
 import { notificarErro } from '../src/protected/components/Notificacao';
 import { useHistory } from 'react-router-dom';
+const { Group } = Radio;
 
 const layout = {
     labelCol: {
@@ -26,6 +27,9 @@ const tailLayout = {
 const Login = () => {
 
     const history = useHistory();
+    const [modalVisible, setModalVisible] = useState(false);
+    const [tipoCadastro, setTipoCadastro] = useState(0);
+
 
     useEffect(() => {
         const vefificaToken = async () => {
@@ -53,7 +57,6 @@ const Login = () => {
             const { token } = data;
             setToken(token);
             history.push('/pedidos');
-            window.location.reload();
         } catch (e) {
             notificarErro(e.response.data.mensagem);
         }   
@@ -64,6 +67,31 @@ const Login = () => {
 
     const redirectResetPassword = () => {
         history.push('/resetPassword');
+    }
+
+    const radioStyle = {
+        display: 'block',
+        height: '30px',
+        lineHeight: '30px',
+    };
+
+    const onChange = e => {
+        setTipoCadastro(e.target.value);
+    };
+
+    const openModal = () => {
+        setModalVisible(true);
+    }
+
+    const closeModal = () => {
+        setModalVisible(false);
+    }
+
+    const redirectCadastro = () => {
+        history.push({
+            pathname: '/perfilUsuario',
+            search: `?tipo=${tipoCadastro}`
+        });
     }
 
     return (
@@ -110,11 +138,37 @@ const Login = () => {
                         <Button type="primary" htmlType="submit" style={{ margin: '2px' }}>
                             Entrar
                         </Button>
-                        <Button type="danger" htmlType="button" onClick={redirectResetPassword}>
+                        <Button type="primary" htmlType="button" onClick={openModal} style={{ margin: '2px' }}>
+                            Cadastre-se?
+                        </Button>
+                        <Button type="link" htmlType="button" onClick={redirectResetPassword}>
                             Esqueceu a senha?
                         </Button>
                     </Form.Item>
                 </Form>
+                <Modal
+                    visible={modalVisible}
+                    title="Tipo de Cadastro!"
+                    onOk={redirectCadastro}
+                    onCancel={closeModal}
+                    footer={[
+                        <Button key='back' danger type='primary' onClick={closeModal}>
+                            Cancelar
+                    </Button>,
+                        <Button key='submit' type='primary' onClick={redirectCadastro}>
+                            Confirmar
+                    </Button>,
+                    ]}
+                >
+                    <Group onChange={onChange} value={tipoCadastro}>
+                        <Radio style={radioStyle} value={0}>
+                            Pessoa Física
+                    </Radio>
+                        <Radio style={radioStyle} value={1}>
+                            Pessoa Jurídica
+                     </Radio>
+                    </Group>
+                </Modal>
             </Container>
         </div>
     );
