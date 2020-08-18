@@ -5,17 +5,24 @@ import TabelaHortalicas from '../../components/TabelaHortalicas';
 import { showConfirm } from '../../components/ConfirmAcao';
 import { notificarSucesso, notificarErro } from '../../components/Notificacao';
 import { useHistory } from 'react-router-dom';
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import {isClienteLogado } from '../../../service/usuario';
+import { DeleteOutlined, EditOutlined, SmileOutlined } from '@ant-design/icons';
+import {isClienteLogado, getKeyUsuarioLogado} from '../../../service/usuario';
 import api from '../../../service/api';
 
-import { Divider, Button } from 'antd';
+import { Divider, Button, Modal, Radio, Rate} from 'antd';
+
 const { Item } = Breadcrumb;
+const { Group } = Radio;
 
 function Hortalicas() {
 
     const [clienteLogado, setClienteLogado] = useState(false);
     const [funcionarioLogado, setFuncionarioLogado] = useState(false);
+
+    const [keyHortalica, setKeyHortalica] = useState('');
+    const [modalVisible, setModalVisible] = useState(false);
+    const [avaliacao, setAvaliacao] = useState(3);
+    const desc = ['Só Deus na causa', 'Mais ou menos', 'Normal', 'Boazinha', 'Showww'];
 
     useEffect(() => {
         const verificarUsuarioLogado = async () => {
@@ -52,6 +59,23 @@ function Hortalicas() {
             pathname: '/perfilHortalica',
             search: `?key=${key}`
         })
+    }
+
+    const avaliar = async () => {
+        try {
+            const keyUsuario = await getKeyUsuarioLogado();
+            await api.post(`/hortalica/avaliacao/${keyHortalica}`,{avaliacao},{params:{keyUsuario}});
+            closeModal();
+            notificarSucesso('Hortaliça Avaliada com sucesso.');
+        } catch (e) {
+            const { mensagem } = e.response.data;
+            notificarErro(mensagem);
+        }
+    }
+
+    const closeModal = () => {
+        setModalVisible(false);
+        setKeyHortalica('');
     }
 
     const acoes = {
@@ -92,10 +116,16 @@ function Hortalicas() {
                     <Button
                         type='primary'
                         style={{ marginLeft: '2px' }}
-                        danger
                         title={'Avaliar Hortaliça'}
-                        icon={<DeleteOutlined />}
+                        icon={<SmileOutlined />}
+                        onClick={_ => {
+                            if(record.avaliacao){
+                                setAvaliacao(record.avaliacao);
+                            }
+                            setKeyHortalica(record.key);
+                            setModalVisible(true);
 
+                        }}
                     />
                 }
             </span>
@@ -116,6 +146,28 @@ function Hortalicas() {
                 {funcionarioLogado &&
                     <Button type='primary' href='/perfilHortalica'>Cadastrar</Button>
                 }
+            
+            <Modal
+                    visible={modalVisible}
+                    title="Avaliar Hortaliça"
+                    onOk={avaliar}
+                    onCancel={closeModal}
+                    footer={[
+                        <Button key='back' danger type='primary' onClick={closeModal}>
+                            Cancelar
+                    </Button>,
+                        <Button key='submit' type='primary' onClick={avaliar}>
+                            Confirmar
+                    </Button>,
+                    ]}
+                >
+                     <span>
+                        <Rate tooltips={desc} onChange={(v)=>{
+                            setAvaliacao(v);
+                        }} value={avaliacao} />
+                        {avaliacao ? <span className="ant-rate-text">{desc[avaliacao - 1]}</span> : ''}
+                    </span>
+                </Modal>
             </Container>
         </div>
     );

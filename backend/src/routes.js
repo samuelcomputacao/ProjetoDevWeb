@@ -13,6 +13,8 @@ routes.get('/hortalica/:key',hortalicaController.findById);
 routes.post('/hortalica', hortalicaController.create);
 routes.delete('/hortalica/:key',hortalicaController.delete);
 routes.put('/hortalica/:key',hortalicaController.update);
+routes.post('/hortalica/avaliacao/:key',hortalicaController.avaliacao);
+
 
 
 //Rotas de Usuários
