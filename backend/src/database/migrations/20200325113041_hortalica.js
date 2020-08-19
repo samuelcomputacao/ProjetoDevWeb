@@ -4,7 +4,7 @@ exports.up = function (knex) {
         table.increments('key').primary();
         table.string('nome').notNullable();
         table.string('categoria').notNullable();
-        table.integer('classificacao').unsigned();
+        table.integer('avaliacao').unsigned();
         table.decimal('valor').notNullable();
     });
 };

@@ -38,7 +38,8 @@ function Hortalicas() {
     const [handleUpdateTable, setHandleUpdateTable] = useState(false);
 
     const carregaHortalicas = async () => {
-        const { data } = await api.get('/hortalica');
+        const keyUsuario = await getKeyUsuarioLogado();
+        const { data } = await api.get('/hortalica',{params:{keyUsuario}});
         return data;
     }
 
@@ -67,6 +68,9 @@ function Hortalicas() {
             await api.post(`/hortalica/avaliacao/${keyHortalica}`,{avaliacao},{params:{keyUsuario}});
             closeModal();
             notificarSucesso('Hortaliça Avaliada com sucesso.');
+            setTimeout(()=>{
+                window.location.reload();
+            },500);
         } catch (e) {
             const { mensagem } = e.response.data;
             notificarErro(mensagem);

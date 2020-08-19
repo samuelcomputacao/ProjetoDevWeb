@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button,Input } from 'antd';
+import { Table, Button,Input, Rate } from 'antd';
 import Highlighter from 'react-highlight-words';
 import { SearchOutlined } from '@ant-design/icons';
 
@@ -123,12 +123,16 @@ function TabelaHortalicas({getData, acoes,handleUpdateTable}) {
             onFilter: (value, record) => record.categoria.indexOf(value) === 0,
         },
         {
-            title: 'Classificação',
-            dataIndex: 'classificacao',
-            key: 'classificacao',
+            title: 'Avaliação',
+            dataIndex: 'avaliacao',
+            key: 'avaliacao',
             defaultSortOrder: 'ascend',
-            sorter: (a, b) => a.classificacao - b.classificacao,
-
+            sorter: (a, b) => a.avaliacao - b.avaliacao,
+            render: (_,record) => (
+                <span>
+                    <Rate disabled defaultValue={record.avaliacao}/>
+                </span>
+            )
         },
         {
             title: 'Valor (R$)',

@@ -12,8 +12,8 @@ const getKeyUsuarioLogado = async () =>{
 
 const isFuncionarioLogado = async () => {
     const tipo = await sessionStorage.getItem(USUARIO_TIPO);
-
-    if(tipo==='1'){
+    console.log(tipo);
+    if(tipo==='FUNCIONARIO'){
          return true;
     }
     return false;
@@ -21,7 +21,8 @@ const isFuncionarioLogado = async () => {
 
 const isClienteLogado = async () => {
     const tipo = await sessionStorage.getItem(USUARIO_TIPO);
-    if(tipo==='0'){
+    console.log(tipo);
+    if(tipo==='CLIENTE'){
         return true;
      }
     return false;
@@ -44,8 +45,10 @@ const setToken = async (token) => {
     sessionStorage.setItem(TOKEN,token);
     sessionStorage.setItem(AVATAR,data.avatar);
     sessionStorage.setItem(USUARIO_KEY,data.key);
-    sessionStorage.setItem(USUARIO_TIPO, data.tipoUsuario);
-    window.location.reload();
+    sessionStorage.setItem(USUARIO_TIPO, data.funcao);
+    setTimeout(()=>{
+       window.location.reload();
+    },500);
 }
 
 const getTipoUsuarioLogado = async () => {
@@ -54,7 +57,10 @@ const getTipoUsuarioLogado = async () => {
 }
 
 const sair = () => {
-    sessionStorage.clear()
+    sessionStorage.clear();
+    setTimeout(()=>{
+        window.location.reload();
+     },500);
 }
 
 export {getKeyUsuarioLogado,isFuncionarioLogado,isClienteLogado,getToken,sair,setToken, getAvatar,getTipoUsuarioLogado};
