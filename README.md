@@ -2,27 +2,28 @@
 
 Sistema utilizado para gereciamento de pedidos, clientes e produtos de uma distribuidora de hortaliças. 
 
-## Funcionalidades
+## Telas
 
 ### Clientes
 
-1. Podem **logar**;
-2. Se **Cadastrar**;
-3. **Visualizar** Produtos; 
-4. **Criar** e **Editar** pedidos.
+1.Tela de **login**;
+2.Tela de **Cadastro**;
+3.Tela de **listagem**, **Visualização** e **avaliação** de Produtos; 
+4.Tela para **Criar** e **Editar** pedidos.
 >Nesse tópico estarão disponíveis, além da escolha manual de produtos, escolhas de formas automáticas seguindo determinadas métricas como produtos mais bem avaliados, por exemplo;
 >Também poderão repetir um pedido feito anteriormente. 
-5. **Avaliar** produtos.
+5. Tela de **Home** onde é possível atualizar os dados cadastrais.
 
 ### Administradores
 
-1. Podem **logar**;
-2. Podem **cadastrar** e **atualizar** usuários;
+1.Tela de **login**(É a mesma que a do cliente);
+2.Tela de **cadastro** e **atualização** de usuários;
+>Um funcionário pode cadastrar ou alterar dados de clientes e outros funcionários;
+3.Tela de **Listagem** de usuários;
 >Funcionários ou clientes;
-3.Podem **cadastrar** produtos;
-4. **Analizam** pedidos em em seguida **aceita** ou **rejeita** depedendo de sua escolha;
-5. Podem **realizar** controle de estoque.
->Esta funcionalidade só sera implementada dependendo do andamento da disciplina.
+4.Tela de **crud** de produtos;
+5.Tela de **listagem** de produtos
+6.Tela de **Analize** de pedidos em em seguida **aceita** ou **rejeita** depedendo de sua escolha;
 
 ## Detalhes técnicos
 
