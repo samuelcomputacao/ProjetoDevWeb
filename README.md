@@ -8,7 +8,8 @@ Sistema utilizado para gereciamento de pedidos, clientes e produtos de uma distr
 
 1. Tela de **login**;
 2. Tela de **cadastro**;
-3. Tela de **listagem**, **visualização** e **avaliação** de Produtos; 
+3. Tela de **listagem**, **visualização** e **avaliação** de Produtos;
+> Cada produto listado irá apresentar seu nome, valor, e categoria. Além disso, cada produto irá conter a avaliação do cliente logado.
 4. Tela para **criação**,**edição** e **listagem** pedidos(apenas os pedidos do cliente).
 > Nesse tópico estarão disponíveis, além da escolha manual de produtos, escolhas de formas automáticas seguindo determinadas métricas como produtos mais bem avaliados, por exemplo;
 > Também poderão repetir um pedido feito anteriormente. 
@@ -20,9 +21,11 @@ Sistema utilizado para gereciamento de pedidos, clientes e produtos de uma distr
 2. Tela de **cadastro** e **atualização** de usuários;
 > Um funcionário pode cadastrar ou alterar dados de clientes e outros funcionários;
 3. Tela de **listagem** de usuários;
-> Funcionários ou clientes;
+>Cada usuário listado irá apresentar seu nome, CPF ou CNPJ, e se é cliente ou funcionário.
+>Ná listagem é possível remover um usuário ou redirecionar para tela de atualização.
 4. Tela de **crud** de produtos;
 5. Tela de **listagem** de produtos
+>Cada produto listado irá apresentar seu nome, valor, e categoria. Além disse, cada produto irá conter a avaliação média dos clientes.
 6. Tela de **listagem** e **analize** de pedidos(de todos os clientes) em em seguida **aceita** ou **rejeita** depedendo de sua escolha;
 
 ## Detalhes técnicos
