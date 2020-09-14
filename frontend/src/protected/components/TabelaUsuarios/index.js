@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Input, Table } from 'antd';
+import { Button, Input, Pagination } from 'antd';
 import Highlighter from 'react-highlight-words';
 import { SearchOutlined } from '@ant-design/icons';
 import './index.css';
-function TabelaUsuarios({getData, acoes, handleUpdateTable}) {
+import Card from '../Card';
+function TabelaUsuarios({ getData, acoes, handleUpdateTable }) {
 
     const [searchText, setSearchText] = useState('');
     const [searchedColumn, setSearchedColumn] = useState('');
@@ -19,10 +20,10 @@ function TabelaUsuarios({getData, acoes, handleUpdateTable}) {
             setLoadingTable(false);
         }
         carregaUsuarios();
-    }, [getData,handleUpdateTable]);
+    }, [getData, handleUpdateTable]);
 
-    
-   
+
+
 
     const getColumnSearchProps = dataIndex => ({
         filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
@@ -122,10 +123,44 @@ function TabelaUsuarios({getData, acoes, handleUpdateTable}) {
         acoes,
     ];
 
+    const getConteudo = (usuario) => {
+        return (
+            <div>
+                <p>
+                    <span><b>CPF/CNPJ:</b></span>
+                    <span>{usuario.cpfCnpj}</span>
+                </p>
+                <p>
+                    <span><b>Função:</b></span>
+                    <span>{usuario.funcao}</span>
+                </p>
+                <p>
+                    <span><b>Código:</b></span>
+                    <span>{usuario.key}</span>
+                </p>
+            </div>
+        );
+    }
+
 
 
     return (
-        <Table dataSource={lista} columns={columns} className='Tabela' bordered loading={loadingTable} pagination={{ pageSizeOptions: ['5', '10', '20', '40'], showSizeChanger: true, defaultPageSize: 5 }} />
+        // <Table dataSource={lista} columns={columns} className='Tabela' bordered loading={loadingTable} pagination={{ pageSizeOptions: ['5', '10', '20', '40'], showSizeChanger: true, defaultPageSize: 5 }} />
+        <div>
+            <div>
+                {
+                    lista.map((usuario) => {
+                        return (
+                            <Card titulo={usuario.nome} conteudo={getConteudo(usuario)} acoes={acoes(usuario)} />
+                        );
+                    })
+                }
+            </div>
+            <br />
+            <center>
+                <Pagination defaultCurrent={1} total={50} />
+            </center>
+        </div>
     );
 }
 

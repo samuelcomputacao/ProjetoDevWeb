@@ -72,11 +72,8 @@ function Usuarios() {
         });
     }
 
-    const acoes = {
-        title: 'Ações',
-        dataIndex: 'acoes',
-        key: 'acoes',
-        render: (text, record) => (
+    const acoes = (record) => {
+        return (
             <span>
                 <Button
                     type='primary'
@@ -100,7 +97,7 @@ function Usuarios() {
                     }
                 />
             </span>
-        ),
+        );
     }
 
     return (
