@@ -34,4 +34,17 @@ Sistema utilizado para gereciamento de pedidos, clientes e produtos de uma distr
 2. Nem todas as ações estarão disponíveis para o usuário logado, vai depender se é cliente ou funcionário;
 3. Os componentes criados foram tomados como base os componentes do framework [Ant Design](https://ant.design/) e maioria dos estilos o [Bootstrap](https://react-bootstrap.github.io/).
 
+## Como rodar
+1. Navegar para o diretório backend e executar:
+>yarn install && yarn dev
+
+2. Navegar para o diretório frontend e executar:
+>yarn install && yarn start
+
+## Logins
+### Funcionário:
+>CPF: 333.333.333-33, senha:1
+### Cliente:
+>CPF: 222.222.222-22, senha:1
+
 
