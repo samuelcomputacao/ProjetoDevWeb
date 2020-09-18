@@ -43,7 +43,7 @@ Sistema utilizado para gereciamento de pedidos, clientes e produtos de uma distr
 
 ## Logins
 ### Funcionário:
->CPF: 111.111.111-11, senha:1
+>CPF: 333.333.333-33, senha:1
 ### Cliente:
 >CPF: 222.222.222-22, senha:1
 
