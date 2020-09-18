@@ -3,7 +3,7 @@ import './index.css';
 
 function Card({ titulo, conteudo, acoes }) {
     return (
-        <div className='card'>
+        <div className='card' >
             <center>
                 <h3>{titulo}</h3>
             </center>

@@ -1,29 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Input, Pagination } from 'antd';
+import { Button, Input, Pagination, Space, Spin } from 'antd';
 import Highlighter from 'react-highlight-words';
 import { SearchOutlined } from '@ant-design/icons';
 import './index.css';
 import Card from '../Card';
-function TabelaUsuarios({ getData, acoes, handleUpdateTable }) {
+import { notificarErro } from '../Notificacao';
+function TabelaUsuarios({ getData, acoes, handleUpdateTable, getTotal }) {
 
     const [searchText, setSearchText] = useState('');
     const [searchedColumn, setSearchedColumn] = useState('');
     const [lista, setLista] = useState([]);
     const [loadingTable, setLoadingTable] = useState(false);
+    const [total, setTotal] = useState(0);
 
+    const [page,setPage] = useState(1);
+    const [pageSize,setPageSize] = useState(3);
 
     useEffect(() => {
-        async function carregaUsuarios() {
+        async function init() {
             setLoadingTable(true);
-            const data = await getData();
+            const data = await getData(page,pageSize);
+            const total = await getTotal();
+            setTotal(total);
             setLista(data);
             setLoadingTable(false);
         }
-        carregaUsuarios();
-    }, [getData, handleUpdateTable]);
-
-
-
+        init();
+    }, [getData, getTotal, page, pageSize]);
 
     const getColumnSearchProps = dataIndex => ({
         filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
@@ -123,6 +126,20 @@ function TabelaUsuarios({ getData, acoes, handleUpdateTable }) {
         acoes,
     ];
 
+    const onChangePagnator = (pg, ps) => {
+        console.log(`PAGE: ${pg} PAGESIZE: ${ps} TOT: ${Math.ceil(total/ps)} TOT: ${pg > Math.ceil(total/ps)}`)
+        if(pg > Math.ceil(total/ps)){
+            notificarErro('Página inválida!');
+        }else{
+            if(ps !== pageSize){
+                setPage(0);
+                setPageSize(ps);
+            }else{
+                setPage(pg);
+            }
+        }
+    }
+
     const getConteudo = (usuario) => {
         return (
             <div>
@@ -146,19 +163,28 @@ function TabelaUsuarios({ getData, acoes, handleUpdateTable }) {
 
     return (
         // <Table dataSource={lista} columns={columns} className='Tabela' bordered loading={loadingTable} pagination={{ pageSizeOptions: ['5', '10', '20', '40'], showSizeChanger: true, defaultPageSize: 5 }} />
+
         <div>
-            <div>
-                {
-                    lista.map((usuario) => {
-                        return (
-                            <Card titulo={usuario.nome} conteudo={getConteudo(usuario)} acoes={acoes(usuario)} />
-                        );
-                    })
-                }
-            </div>
+            {!loadingTable && (
+                <div>
+                    {
+                        lista.map((usuario) => {
+                            return (
+                                <div key={usuario.key} className='force-display-inline'>
+                                    <Card titulo={usuario.nome} conteudo={getConteudo(usuario)} acoes={acoes(usuario)} />
+                                </div>
+                            );
+                        })
+                    }
+                </div>
+            )}{ loadingTable && (
+                <Space size='larger'>
+                    <Spin size='large'/>
+                </Space>
+            )}
             <br />
             <center>
-                <Pagination defaultCurrent={1} total={50} />
+                <Pagination showQuickJumper showSizeChanger defaultCurrent={1} total={total} defaultPageSize={pageSize} onChange={onChangePagnator} pageSizeOptions={[1,5,10]}/>
             </center>
         </div>
     );

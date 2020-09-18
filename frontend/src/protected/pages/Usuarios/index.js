@@ -49,8 +49,14 @@ function Usuarios() {
         });
     }
 
-    const carregaUsuarios = async () => {
-        const { data } = await api.get('/usuario');
+    const carregaUsuarios = async (page, pageSize) => {
+        const recurso = `/usuario?page=${page}&pageSize=${pageSize}`;
+        const { data } = await api.get(recurso);
+        return data;
+    }
+
+    const carregaTotal = async () => {
+        const { data } = await api.get('/usuario/total');
         return data;
     }
 
@@ -109,7 +115,7 @@ function Usuarios() {
             <Container className='Container'>
                 <Titulo nome='Usuários' />
                 <Divider />
-                <TabelaUsuarios getData={carregaUsuarios} acoes={acoes} handleUpdateTable/>
+                <TabelaUsuarios getData={carregaUsuarios} getTotal={carregaTotal} acoes={acoes} handleUpdateTable/>
                 <Divider />
                 <FooterButtons label1='Cadastrar' visible1={isFuncionarioLogado()} callback1={openModal} visible2={false}/>               
                 <Modal

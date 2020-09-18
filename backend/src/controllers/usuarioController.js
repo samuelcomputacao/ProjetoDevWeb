@@ -3,9 +3,16 @@ const {getUsuario}  = require('../service/loginService');
 
 module.exports = {
 
-    async index(_,response){
-        const usuarios = await connection('usuario').select('*');
+    async index(request,response){
+        const {page, pageSize} = request.query;
+        const usuarios = await connection('usuario').select('*').limit(pageSize).offset((page*pageSize)-1);
         return response.json(usuarios);
+    },
+
+    async total(_,response){
+        const result = await connection('usuario').count('key',{as:'total'}).first();
+        const {total} = result;
+        return response.status(200).json(total);
     },
 
     async findById(request,response){
