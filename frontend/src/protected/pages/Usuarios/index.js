@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
 import { Container, Breadcrumb } from 'react-bootstrap';
 import TabelaUsuarios from '../../components/TabelaUsuarios';
-import { Modal, Radio, Button, Divider } from 'antd';
+import { Modal, Radio, Button, Divider, Form, Input, Select, Row, Col } from 'antd';
 import { useHistory } from 'react-router-dom';
 import Titulo from '../../components/Titulo';
-import {showConfirm} from '../../components/ConfirmAcao';
+import { showConfirm } from '../../components/ConfirmAcao';
 import { notificarSucesso, notificarErro } from '../../components/Notificacao';
-import {DeleteOutlined,EditOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import FooterButtons from '../../components/FooterButtons';
 import api from '../../../service/api';
 import './index.css';
 import { isFuncionarioLogado } from '../../../service/usuario';
+import { categorias } from '../../util/categorias';
 
 const { Item } = Breadcrumb;
 const { Group } = Radio;
@@ -22,7 +23,11 @@ function Usuarios() {
 
     const [handleUpdateTable, setHandleUpdateTable] = useState(false);
 
+    const [filtro, setFiltro] = useState('');
+
     const history = useHistory();
+
+    const [form] = Form.useForm();
 
     const radioStyle = {
         display: 'block',
@@ -50,23 +55,30 @@ function Usuarios() {
     }
 
     const carregaUsuarios = async (page, pageSize) => {
-        const recurso = `/usuario?page=${page}&pageSize=${pageSize}`;
+        let recurso = `/usuario?page=${page}&pageSize=${pageSize}`;
+        if (filtro) {
+            recurso += '&' + filtro;
+        }
         const { data } = await api.get(recurso);
         return data;
     }
 
     const carregaTotal = async () => {
-        const { data } = await api.get('/usuario/total');
+        let recurso = '/usuario/total';
+        if (filtro) {
+            recurso += '?' + filtro;
+        }
+        const { data } = await api.get(recurso);
         return data;
     }
 
-    const excluiUsuario = async ({key}) =>{
+    const excluiUsuario = async ({ key }) => {
         try {
             await api.delete(`/usuario/${key}`);
             notificarSucesso('Usuário removido com sucesso.')
             setHandleUpdateTable(!handleUpdateTable);
         } catch (e) {
-            const {mensagem} = e.response.data;
+            const { mensagem } = e.response.data;
             notificarErro(mensagem);
         }
     }
@@ -76,6 +88,95 @@ function Usuarios() {
             pathname: '/perfilUsuario',
             search: `?key=${usuario.key}&tipo=${usuario.tipoUsuario}`
         });
+    }
+
+    const onFinish = async (values) => {
+        const { nome, funcao, cpfCnpj, key, orderby} = values;
+        setFiltro(`nome=${nome ? nome : ''}&funcao=${funcao ? funcao : ''}&cpfCnpj=${cpfCnpj ? cpfCnpj : ''}&key=${key?key:''}&orderby=${orderby ? orderby : ''}`);
+        setHandleUpdateTable(!handleUpdateTable);
+    };
+
+    const getFiltro = () => {
+        return (
+            <Form
+                form={form}
+                onFinish={onFinish}
+            >
+                <Row gutter={24}>
+                    <Col span={8} key='nome'>
+                        <Form.Item
+                            label='Nome'
+                            name="nome"
+                        >
+                            <Input id='nomeId' placeholder='Nome' />
+                        </Form.Item>
+                    </Col>
+                    <Col span={8} key='cpfCnpj'>
+                        <Form.Item
+                            label='Cpf/Cnpj'
+                            name="cpfCnpj"
+                        >
+                            <Input placeholder='CPF ou CNPJ' />
+                        </Form.Item>
+                    </Col>
+                    <Col span={8} key='funcao'>
+                        <Form.Item
+                            label='Função'
+                            name="funcao"
+                        >
+                            <Select>
+                                {
+                                    categorias.map((cat) => {
+                                        return (<Select.Option value={cat} key={cat}>{cat}</Select.Option>)
+                                    })
+                                }
+                            </Select>
+                        </Form.Item>
+                    </Col>
+                </Row>
+                <Row gutter={24}>
+                    <Col>
+                        <Form.Item
+                            label='Código'
+                            name="key"
+                        >
+                            <Input placeholder='key' />
+                        </Form.Item>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span={8} key='orderby'>
+                        <Form.Item name="orderby" label="Ordenar Por">
+                            <Radio.Group>
+                                <Radio value="nome">Nome</Radio>
+                                <Radio value="key">Código</Radio>
+                            </Radio.Group>
+                        </Form.Item>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span={8} key='filtrar'>
+                        <Form.Item >
+                            <Button
+                                type="primary"
+                                htmlType="submit"
+                            >
+                                Filtrar
+                    </Button>
+                            <Button
+                                type="danger"
+                                onClick={() => {
+                                    form.resetFields();
+                                }}
+                                style={{ marginLeft: '2px' }}
+                            >
+                                Limpar
+                        </Button>
+                        </Form.Item>
+                    </Col>
+                </Row>
+            </Form>
+        );
     }
 
     const acoes = (record) => {
@@ -97,7 +198,7 @@ function Usuarios() {
                     onClick={_ => {
                         const title = 'Deseja excluir o usuário?'
                         const content = `Ao clicar em OK você excluirá o usuário de código ${record.key}`;
-                        const params = { key:record.key };
+                        const params = { key: record.key };
                         showConfirm(title, content, excluiUsuario, params);
                     }
                     }
@@ -115,9 +216,9 @@ function Usuarios() {
             <Container className='Container'>
                 <Titulo nome='Usuários' />
                 <Divider />
-                <TabelaUsuarios getData={carregaUsuarios} getTotal={carregaTotal} acoes={acoes} handleUpdateTable/>
+                <TabelaUsuarios getData={carregaUsuarios} getTotal={carregaTotal} acoes={acoes} handleUpdateTable getFiltro={getFiltro} />
                 <Divider />
-                <FooterButtons label1='Cadastrar' visible1={isFuncionarioLogado()} callback1={openModal} visible2={false}/>               
+                <FooterButtons label1='Cadastrar' visible1={isFuncionarioLogado()} callback1={openModal} visible2={false} />
                 <Modal
                     visible={modalVisible}
                     title="Tipo de Cadastro!"
