@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Container, Breadcrumb } from 'react-bootstrap';
-import TabelaUsuarios from '../../components/TabelaUsuarios';
-import { Modal, Radio, Button, Divider, Form, Input, Select, Row, Col } from 'antd';
+import Tabela from '../../components/Tabela';
+import { Modal, Radio, Button, Divider, Form, Input, Select, Row, Col} from 'antd';
 import { useHistory } from 'react-router-dom';
 import Titulo from '../../components/Titulo';
 import { showConfirm } from '../../components/ConfirmAcao';
 import { notificarSucesso, notificarErro } from '../../components/Notificacao';
+import Card from '../../components/Card';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import FooterButtons from '../../components/FooterButtons';
 import api from '../../../service/api';
@@ -91,12 +92,12 @@ function Usuarios() {
     }
 
     const onFinish = async (values) => {
-        const { nome, funcao, cpfCnpj, key, orderby} = values;
-        setFiltro(`nome=${nome ? nome : ''}&funcao=${funcao ? funcao : ''}&cpfCnpj=${cpfCnpj ? cpfCnpj : ''}&key=${key?key:''}&orderby=${orderby ? orderby : ''}`);
+        const { nome, funcao, cpfCnpj, key, orderby } = values;
+        setFiltro(`nome=${nome ? nome : ''}&funcao=${funcao ? funcao : ''}&cpfCnpj=${cpfCnpj ? cpfCnpj : ''}&key=${key ? key : ''}&orderby=${orderby ? orderby : ''}`);
         setHandleUpdateTable(!handleUpdateTable);
     };
 
-    const getFiltro = () => {
+    const getFiltro = (setPage) => {
         return (
             <Form
                 form={form}
@@ -140,7 +141,7 @@ function Usuarios() {
                             label='Código'
                             name="key"
                         >
-                            <Input placeholder='key' />
+                            <Input placeholder='código' />
                         </Form.Item>
                     </Col>
                 </Row>
@@ -160,6 +161,9 @@ function Usuarios() {
                             <Button
                                 type="primary"
                                 htmlType="submit"
+                                onClick={() => {
+                                    setPage(1);
+                                }}
                             >
                                 Filtrar
                     </Button>
@@ -179,7 +183,7 @@ function Usuarios() {
         );
     }
 
-    const acoes = (record) => {
+    const getAcoes = (record) => {
         return (
             <span>
                 <Button
@@ -206,6 +210,31 @@ function Usuarios() {
             </span>
         );
     }
+    const getConteudoCard = (usuario) => {
+        return (
+            <div>
+                <p>
+                    <span><b>CPF/CNPJ:</b></span>
+                    <span>{usuario.cpfCnpj}</span>
+                </p>
+                <p>
+                    <span><b>Função:</b></span>
+                    <span>{usuario.funcao}</span>
+                </p>
+                <p>
+                    <span><b>Código:</b></span>
+                    <span>{usuario.key}</span>
+                </p>
+            </div>
+        );
+    }
+    const getCard = (usuario) => {
+        return (
+            <div key={usuario.key} className='force-display-inline'>
+                <Card titulo={usuario.nome} conteudo={getConteudoCard(usuario)} acoes={getAcoes(usuario)} />
+            </div>
+        );
+    }
 
     return (
         <div>
@@ -216,7 +245,7 @@ function Usuarios() {
             <Container className='Container'>
                 <Titulo nome='Usuários' />
                 <Divider />
-                <TabelaUsuarios getData={carregaUsuarios} getTotal={carregaTotal} acoes={acoes} handleUpdateTable getFiltro={getFiltro} />
+                <Tabela getData={carregaUsuarios} getTotal={carregaTotal} getCard={getCard} getFiltro={getFiltro} handleUpdateTable />
                 <Divider />
                 <FooterButtons label1='Cadastrar' visible1={isFuncionarioLogado()} callback1={openModal} visible2={false} />
                 <Modal
@@ -246,5 +275,4 @@ function Usuarios() {
         </div>
     );
 }
-
 export default Usuarios;

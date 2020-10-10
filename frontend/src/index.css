@@ -22,11 +22,11 @@ code {
 }
 
 .grid{
-  display: grid;
+  display: grid !important;
   grid-template-areas: abc;
 }
 
 .center{
-  display: grid;
+  display: grid !important;
   grid-area: b;
 }
