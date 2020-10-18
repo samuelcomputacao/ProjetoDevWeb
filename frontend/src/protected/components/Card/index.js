@@ -1,12 +1,15 @@
 import React from 'react';
-import './index.css';
 
 function Card({ titulo, conteudo, acoes }) {
     return (
         <div className='card' >
-            <center>
-                <h3>{titulo}</h3>
-            </center>
+            <div className='grid'>
+                <div className='grid center'>
+                    <h3>
+                        <strong>{titulo}</strong>
+                    </h3>
+                </div>
+            </div>
             <hr />
             {conteudo}
             <hr />

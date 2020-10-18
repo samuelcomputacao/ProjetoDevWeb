@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Pagination } from 'antd';
-import './index.css';
 import ProgressBar from '../ProgressBar';
 import { notificarErro } from '../Notificacao';
 function Tabela({ getData, getTotal, handleUpdateTable, getFiltro, getCard }) {
