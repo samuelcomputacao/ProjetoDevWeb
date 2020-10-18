@@ -11,6 +11,7 @@ import {
 } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router-dom';
+import { categorias } from '../../util/categorias';
 
 function FormUsuario({ atualizar, keyUsuario, tipoUsuario }) {
 
@@ -22,7 +23,6 @@ function FormUsuario({ atualizar, keyUsuario, tipoUsuario }) {
 
     const [linkAvatar, setLinkAvatar] = useState('');
 
-    const categorias = ['FUNCIONARIO', 'CLIENTE'];
     const history = useHistory();
 
     useEffect(() => {

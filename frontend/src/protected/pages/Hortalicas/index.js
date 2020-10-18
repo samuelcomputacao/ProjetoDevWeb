@@ -9,10 +9,9 @@ import { DeleteOutlined, EditOutlined, SmileOutlined } from '@ant-design/icons';
 import {isClienteLogado, getKeyUsuarioLogado} from '../../../service/usuario';
 import api from '../../../service/api';
 
-import { Divider, Button, Modal, Radio, Rate} from 'antd';
+import { Divider, Button, Modal, Rate} from 'antd';
 
 const { Item } = Breadcrumb;
-const { Group } = Radio;
 
 function Hortalicas() {
 

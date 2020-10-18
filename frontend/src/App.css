@@ -49,3 +49,7 @@
 #app main{
   margin-left: 30px;
 }
+
+.force-display-inline{
+  display: inline-flex;
+}

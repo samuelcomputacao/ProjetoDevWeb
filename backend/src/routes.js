@@ -19,6 +19,7 @@ routes.post('/hortalica/avaliacao/:key',hortalicaController.avaliacao);
 
 //Rotas de Usuários
 routes.get('/usuario',usuarioController.index);
+routes.get('/usuario/total',usuarioController.total);
 routes.get('/usuario/:key',usuarioController.findById);
 routes.get('/usuarioToken',usuarioController.findByToken);
 routes.post('/usuario',usuarioController.create);

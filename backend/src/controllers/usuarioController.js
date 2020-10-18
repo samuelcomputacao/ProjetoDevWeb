@@ -3,9 +3,46 @@ const {getUsuario}  = require('../service/loginService');
 
 module.exports = {
 
-    async index(_,response){
-        const usuarios = await connection('usuario').select('*');
+    async index(request,response){
+        const{page, pageSize, nome, funcao, cpfCnpj, key, orderby} = request.query;
+        const conn =  connection('usuario');
+        if(nome){
+            conn.where('nome','like',`%${nome}%`);
+        }
+        if(funcao){
+            conn.andWhere('funcao','=',funcao);
+        }
+        if(cpfCnpj){
+            conn.andWhere('cpfCnpj','=',cpfCnpj);
+        }
+        if(key){
+            conn.andWhere('key','=',key);
+        }
+        if(orderby){
+            conn.orderBy(orderby);
+        }
+        const usuarios = await conn.select('*').offset((page-1)*pageSize).limit(pageSize);
         return response.json(usuarios);
+    },
+
+    async total(request,response){
+        const{nome, funcao, cpfCnpj, key} = request.query;
+        const conn = connection('usuario');
+        if(nome){
+            conn.where('nome','like',`%${nome}%`);
+        }
+        if(funcao){
+            conn.andWhere('funcao','=',funcao);
+        }
+        if(cpfCnpj){
+            conn.andWhere('cpfCnpj','=',cpfCnpj);
+        }
+        if(key){
+            conn.andWhere('key','=',key);
+        }
+        const result = await conn.count('key',{as:'total'}).first();
+        const {total} = result;
+        return response.status(200).json(total);
     },
 
     async findById(request,response){
