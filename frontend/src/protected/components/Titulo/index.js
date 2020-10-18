@@ -1,6 +1,6 @@
 import React from 'react';
 import {Row, Col, Badge } from  'react-bootstrap';
-function Titulo({ nome }) {
+function Titulo({ nome = 'Titulo não Informado' }) {
     return (
         <Row className="justify-content-md-center">
             <Col md="auto">
