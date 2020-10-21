@@ -4,9 +4,9 @@ import { Container } from 'react-bootstrap';
 import { Form, Input, Button, Divider,Modal,Radio } from 'antd';
 import Titulo from './protected/components/Titulo';
 import api from '../src/service/api';
-import { getToken, setToken } from '../src/service/usuario';
 import { notificarErro } from '../src/protected/components/Notificacao';
 import { useHistory } from 'react-router-dom';
+import { useUsuarioContext } from './context/UsuarioContext';
 const { Group } = Radio;
 
 const layout = {
@@ -30,6 +30,7 @@ const Login = () => {
     const [modalVisible, setModalVisible] = useState(false);
     const [tipoCadastro, setTipoCadastro] = useState(0);
 
+    const {setToken,getToken} = useUsuarioContext();
 
     useEffect(() => {
         const vefificaToken = async () => {
@@ -47,7 +48,7 @@ const Login = () => {
             }
         }
         vefificaToken();
-    }, [history]);
+    }, [getToken, history]);
 
 
     const onFinish = async values => {

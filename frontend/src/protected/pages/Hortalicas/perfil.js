@@ -3,6 +3,7 @@ import { Breadcrumb, Container } from 'react-bootstrap';
 import { Divider } from 'antd';
 import Titulo from '../../components/Titulo';
 import FormHortalica from '../../components/FormHortalica';
+import { Link } from 'react-router-dom';
 const { Item } = Breadcrumb;
 
 function PerfilHortalica({ location }) {
@@ -18,11 +19,11 @@ function PerfilHortalica({ location }) {
                 console.log('dentro');
                 const params = new URLSearchParams(location.search);
                 const key = params.get('key');
-                if(key){
+                if (key) {
                     setKeyHortalica(key);
                     setCarregado(true);
                 }
-            } 
+            }
         }
         buscarHortalica();
     }, [location]);
@@ -32,8 +33,12 @@ function PerfilHortalica({ location }) {
         return (
             <div>
                 <Breadcrumb>
-                    <Item href="/">Principal</Item>
-                    <Item href="/hortalicas">Hortaliças</Item>
+                    <Item>
+                        <Link className='link' to='/pedidos'>Principal</Link>
+                    </Item>
+                    <Item>
+                        <Link className='link' to='/hortalicas'>Hortaliças</Link>
+                    </Item>
                     <Item active >Editar</Item>
                 </Breadcrumb>
                 <Container>
@@ -47,8 +52,12 @@ function PerfilHortalica({ location }) {
         return (
             <div>
                 <Breadcrumb>
-                    <Item href="/">Principal</Item>
-                    <Item href="/hortalicas">Hortaliças</Item>
+                    <Item>
+                        <Link className='link' to='/pedidos'>Principal</Link>
+                    </Item>
+                    <Item>
+                        <Link className='link' to='/hortalicas'>Hortaliças</Link>
+                    </Item>
                     <Item active >Cadastrar</Item>
                 </Breadcrumb>
                 <Container>

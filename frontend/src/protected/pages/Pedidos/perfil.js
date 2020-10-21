@@ -17,9 +17,9 @@ import TabelaHortalicas from '../../components/TabelaHortalicas';
 import api from '../../../service/api';
 import { showConfirm } from '../../components/ConfirmAcao';
 import { notificarErro, notificarSucesso } from '../../components/Notificacao';
-import { getKeyUsuarioLogado } from '../../../service/usuario';
-import { useHistory } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import FooterButtons from "../../components/FooterButtons";
+import { useUsuarioContext } from '../../../context/UsuarioContext';
 const { Item } = Breadcrumb;
 
 
@@ -40,6 +40,8 @@ function PerfilPedidos({ location }) {
     const [cadastro, setCadastro] = useState(false);
     const [keyPedido, setKeyPedido] = useState('');
 
+    const { getKeyUsuarioLogado } = useUsuarioContext();
+
     useEffect(() => {
         async function verificaParams() {
             const params = new URLSearchParams(location.search);
@@ -53,13 +55,13 @@ function PerfilPedidos({ location }) {
                 const ped = data.pedido;
                 setDateString(ped.data);
                 setKeyPedido(key);
-               
+
                 const tam = ped.hortalicas.length;
                 let i = 0;
                 let somatorio = 0;
-                while(i < tam){
+                while (i < tam) {
                     const hort = ped.hortalicas[i];
-                    if ( hort.quantidade <= 0) {
+                    if (hort.quantidade <= 0) {
                         notificarErro('Quantidade inválida.');
                     } else {
                         somatorio = somatorio + (hort.valor * hort.quantidade);
@@ -69,8 +71,8 @@ function PerfilPedidos({ location }) {
                     console.log(hort);
                     i++;
                 }
-    
-                
+
+
             }
         }
         verificaParams();
@@ -212,7 +214,7 @@ function PerfilPedidos({ location }) {
                 }
             });
             if (!possui) {
-                setPedido([...pedido, { ...hortalica, quantidade}])
+                setPedido([...pedido, { ...hortalica, quantidade }])
                 setValorTotal(valorTotal + (hortalica.valor * quantidade));
                 setHandlerUpdateTable(!handlerUpdateTable);
                 setQuantidade(1);
@@ -220,7 +222,7 @@ function PerfilPedidos({ location }) {
                 openNotification('Aviso!', 'A hortaliça já foi adicionada!');
             }
             handleCancel();
-            
+
         }
     }
 
@@ -261,66 +263,70 @@ function PerfilPedidos({ location }) {
     return (
         <div>
             <Breadcrumb>
-                <Item href="/">Principal</Item>
-                <Item href="/pedidos">Pedidos</Item>
+                <Item>
+                    <Link className='link' to='/pedidos'>Principal</Link>
+                </Item>
+                <Item>
+                    <Link className='link' to='/pedidos'>Pedidos</Link>
+                </Item>
                 {cadastro && <Item active>Cadastrar</Item>}
                 {!cadastro && <Item active>Visualizar</Item>}
             </Breadcrumb>
-        <Container>
-            {cadastro && <Titulo nome='Cadastro de Pedido' />}
-            {!cadastro && <Titulo nome='Visualizar de Pedido' />}
-            {cadastro && <div>
+            <Container>
+                {cadastro && <Titulo nome='Cadastro de Pedido' />}
+                {!cadastro && <Titulo nome='Visualizar de Pedido' />}
+                {cadastro && <div>
+                    <Divider />
+                    <h2>Hortaliças</h2>
+                    <TabelaHortalicas getData={getHortalicas} acoes={acoes} />
+                    <Divider />
+                </div>}
+                <h2>Pedido</h2>
+                <TabelaHortalicas getData={getPedidos} acoes={acoesPedido} handleUpdateTable />
                 <Divider />
-                <h2>Hortaliças</h2>
-                <TabelaHortalicas getData={getHortalicas} acoes={acoes} />
-                <Divider />
-            </div>}
-            <h2>Pedido</h2>
-            <TabelaHortalicas getData={getPedidos} acoes={acoesPedido} handleUpdateTable />
-            <Divider />
-            <Form {...layout}>
-                <Form.Item
-                    {...tailLayout}
-                    label='Valor Total: '>
-                    <Input readOnly value={valorTotal} />
-                </Form.Item>
-                <Form.Item
-                    {...tailLayout}
-                    label='Data: '>
-                    {cadastro && <DatePicker value={data} onChange={onChangeData} format={'DD/MM/YYYY'} locale={'pt-BR'} />}
-                    {!cadastro && <Input readOnly value={dateString}/>}
-                </Form.Item>
-            </Form>
-            {cadastro && <FooterButtons label1='Salvar' label2='Voltar' callback1={salvarPedido} callback2={historico.goBack} />}
-            {!cadastro && <FooterButtons label1='Atualizar' label2='Cancelar' callback1={atualizarPedido} callback2={historico.goBack} />}
-            <Modal
-                title="Quantidade"
-                visible={visible}
-                onOk={handleOk}
-                confirmLoading={confirmLoading}
-                onCancel={handleCancel}
-                footer={[
-                    <Button key="back" onClick={handleCancel}>
-                        Cancelar
-                            </Button>,
-                    <Button key="submit" type="primary" loading={loading} onClick={inserirHortalica}>
-                        Adicionar
-                            </Button>,
-                ]}
-
-            >
                 <Form {...layout}>
-                    <Form.Item {...tailLayout}
-                        label='Quantidade: '
-                    >
-                        <InputNumber min={1} onChange={(value) => {
-                            setQuantidade(value);
-                        }} value={quantidade} />
+                    <Form.Item
+                        {...tailLayout}
+                        label='Valor Total: '>
+                        <Input readOnly value={valorTotal} />
+                    </Form.Item>
+                    <Form.Item
+                        {...tailLayout}
+                        label='Data: '>
+                        {cadastro && <DatePicker value={data} onChange={onChangeData} format={'DD/MM/YYYY'} locale={'pt-BR'} />}
+                        {!cadastro && <Input readOnly value={dateString} />}
                     </Form.Item>
                 </Form>
-            </Modal>
-            <Divider />
-        </Container>
+                {cadastro && <FooterButtons label1='Salvar' label2='Voltar' callback1={salvarPedido} callback2={historico.goBack} />}
+                {!cadastro && <FooterButtons label1='Atualizar' label2='Cancelar' callback1={atualizarPedido} callback2={historico.goBack} />}
+                <Modal
+                    title="Quantidade"
+                    visible={visible}
+                    onOk={handleOk}
+                    confirmLoading={confirmLoading}
+                    onCancel={handleCancel}
+                    footer={[
+                        <Button key="back" onClick={handleCancel}>
+                            Cancelar
+                            </Button>,
+                        <Button key="submit" type="primary" loading={loading} onClick={inserirHortalica}>
+                            Adicionar
+                            </Button>,
+                    ]}
+
+                >
+                    <Form {...layout}>
+                        <Form.Item {...tailLayout}
+                            label='Quantidade: '
+                        >
+                            <InputNumber min={1} onChange={(value) => {
+                                setQuantidade(value);
+                            }} value={quantidade} />
+                        </Form.Item>
+                    </Form>
+                </Modal>
+                <Divider />
+            </Container>
         </div >
     );
 }

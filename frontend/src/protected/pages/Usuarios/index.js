@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Container, Breadcrumb } from 'react-bootstrap';
 import Tabela from '../../components/Tabela';
-import { Modal, Radio, Button, Divider, Form, Input, Select, Row, Col} from 'antd';
-import { useHistory } from 'react-router-dom';
+import { Modal, Radio, Button, Divider, Form, Input, Select, Row, Col } from 'antd';
+import { Link, useHistory } from 'react-router-dom';
 import Titulo from '../../components/Titulo';
 import { showConfirm } from '../../components/ConfirmAcao';
 import { notificarSucesso, notificarErro } from '../../components/Notificacao';
@@ -11,8 +11,8 @@ import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import FooterButtons from '../../components/FooterButtons';
 import api from '../../../service/api';
 import './index.css';
-import { isFuncionarioLogado } from '../../../service/usuario';
 import { categorias } from '../../util/categorias';
+import { useUsuarioContext } from '../../../context/UsuarioContext';
 
 const { Item } = Breadcrumb;
 const { Group } = Radio;
@@ -25,6 +25,8 @@ function Usuarios() {
     const [handleUpdateTable, setHandleUpdateTable] = useState(false);
 
     const [filtro, setFiltro] = useState('');
+
+    const { isFuncionarioLogado } = useUsuarioContext();
 
     const history = useHistory();
 
@@ -239,7 +241,9 @@ function Usuarios() {
     return (
         <div>
             <Breadcrumb>
-                <Item href="/">Principal</Item>
+                <Item >
+                    <Link className='link' to='/pedidos'>Principal</Link>
+                </Item>
                 <Item active>Usuarios</Item>
             </Breadcrumb>
             <Container className='Container'>
