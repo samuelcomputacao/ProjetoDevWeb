@@ -5,6 +5,7 @@ import {
 } from 'antd';
 import { Breadcrumb, Container } from 'react-bootstrap';
 import Titulo from '../../components/Titulo';
+import { Link } from 'react-router-dom';
 const { Item } = Breadcrumb;
 
 
@@ -28,17 +29,21 @@ function PerfilUsuario({ location }) {
                 if (k) {
                     await setKey(k);
                     setCarregado(true);
-                } 
+                }
             }
         }
         buscaUsuario();
-    }, [location,carregado]);
+    }, [location, carregado]);
     if (carregado) {
         return (
             <div>
                 <Breadcrumb>
-                    <Item href="/">Principal</Item>
-                    <Item href="/usuarios">Usuários</Item>
+                    <Item>
+                        <Link className='link' to='/pedidos'>Principal</Link>
+                    </Item>
+                    <Item>
+                        <Link className='link' to='/usuarios'>Usuários</Link>
+                    </Item>
                     <Item active >Editar</Item>
                 </Breadcrumb>
                 <Container>
@@ -48,20 +53,24 @@ function PerfilUsuario({ location }) {
                 </Container>
             </div>
         );
-    }else {
-        return(
+    } else {
+        return (
             <div>
-            <Breadcrumb>
-                <Item href="/">Principal</Item>
-                <Item href="/usuarios">Usuários</Item>
-                <Item active >Cadastrar</Item>
-            </Breadcrumb>
-            <Container>
-                <Titulo nome='Cadastrar Usuário' />
-                <Divider />
-                <FormUsuario tipoUsuario={tipoUsuario} atualizar={false} />
-            </Container>
-        </div>
+                <Breadcrumb>
+                    <Item>
+                        <Link className='link' to='/pedidos'>Principal</Link>
+                    </Item>
+                    <Item>
+                        <Link className='link' to='/usuarios'>Usuários</Link>
+                    </Item>
+                    <Item active >Cadastrar</Item>
+                </Breadcrumb>
+                <Container>
+                    <Titulo nome='Cadastrar Usuário' />
+                    <Divider />
+                    <FormUsuario tipoUsuario={tipoUsuario} atualizar={false} />
+                </Container>
+            </div>
         );
     }
 }

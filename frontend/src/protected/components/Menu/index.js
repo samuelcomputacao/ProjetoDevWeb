@@ -1,62 +1,66 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar, Nav, Form, Button } from 'react-bootstrap';
 import { Avatar } from 'antd';
-import { isClienteLogado, sair, getAvatar, getKeyUsuarioLogado, getTipoUsuarioLogado, isFuncionarioLogado } from '../../../service/usuario';
 import { UserOutlined } from '@ant-design/icons';
+import { useUsuarioContext } from '../../../context/UsuarioContext';
+import { Link } from 'react-router-dom';
 
 function Menu() {
 
     const [linkAvatar, setLinkAvatar] = useState('');
     const [linkHome, setLinkHome] = useState('#');
 
-    const [funcionarioLogado, setFuncionarioLogado] = useState(false);
-    const [clienteLogado, setClienteLogado] = useState(false);
+    const { isClienteLogado, sair, getAvatar, getKeyUsuarioLogado, getTipoUsuarioLogado, isFuncionarioLogado } = useUsuarioContext();
 
     useEffect(() => {
         const getLinkAvatar = async () => {
-            const avatar = await getAvatar();
+            const avatar = getAvatar();
             if (avatar !== 'null') {
                 setLinkAvatar(avatar);
             }
-            const key = await getKeyUsuarioLogado();
-            const tipo = await getTipoUsuarioLogado();
+            const key = getKeyUsuarioLogado();
+            const tipo = getTipoUsuarioLogado();
             setLinkHome(`/perfilUsuario?key=${key}&tipo=${tipo}`)
         }
-        const verificarUsuarioLogado = async () => {
-            const clienteLog = await isClienteLogado();
-            const funcionarioLog = await isFuncionarioLogado();
-            setFuncionarioLogado(funcionarioLog);
-            setClienteLogado(clienteLog);
-        }
-        verificarUsuarioLogado();
+
         getLinkAvatar();
 
-    }, []);
+    }, [getAvatar, getKeyUsuarioLogado, getTipoUsuarioLogado, isClienteLogado, isFuncionarioLogado]);
 
     return (
         <Navbar bg="success" expand="lg">
-            <Navbar.Brand href="/">HortSystem</Navbar.Brand>
+            <Navbar.Brand>
+                <Link className='link' to='/pedidos'>HortSystem</Link>
+            </Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
                 <Nav className="mr-auto">
-                    {(funcionarioLogado || clienteLogado) &&
-                        <Nav.Link href="/pedidos">Pedidos</Nav.Link>
+                    {(isFuncionarioLogado() || isClienteLogado()) &&
+                        <Nav.Link>
+                            <Link className='link' to='/pedidos'>Pedidos</Link>
+                        </Nav.Link>
                     }
-                    {funcionarioLogado &&
-                        <Nav.Link href="/usuarios">Usuarios</Nav.Link>
+                    {isFuncionarioLogado() &&
+                        <Nav.Link>
+                            <Link className='link' to='/usuarios'>Usuarios</Link>
+                        </Nav.Link>
                     }
-                    {(funcionarioLogado || clienteLogado) &&
-                        <Nav.Link href="/hortalicas">Hortalicas</Nav.Link>
+                    {(isFuncionarioLogado() || isClienteLogado()) &&
+                        <Nav.Link>
+                            <Link className='link' to='/hortalicas'>Hortaliças</Link>
+                        </Nav.Link>
                     }
                 </Nav>
-                {(funcionarioLogado || clienteLogado) &&
+                {(isFuncionarioLogado() || isClienteLogado()) &&
                     <Form inline>
                         <Nav className="mr-auto">
-                            <Nav.Link href={linkHome}>
-                                <div>
-                                    {linkAvatar && <Avatar size={40} src={linkAvatar} />}
-                                    {!linkAvatar && <Avatar size={40} icon={<UserOutlined />} />}
-                                </div>
+                            <Nav.Link >
+                                <Link className='link' to={linkHome}>
+                                    <div>
+                                        {linkAvatar && <Avatar size={40} src={linkAvatar} />}
+                                        {!linkAvatar && <Avatar size={40} icon={<UserOutlined />} />}
+                                    </div>
+                                </Link>
                             </Nav.Link>
                         </Nav>
 

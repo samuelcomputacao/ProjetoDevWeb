@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import TabelaPedidos from '../../components/TabelaPedidos';
 import Titulo from '../../components/Titulo';
-import { CloseOutlined, SearchOutlined, ReloadOutlined, CheckOutlined} from '@ant-design/icons';
+import { CloseOutlined, SearchOutlined, ReloadOutlined, CheckOutlined } from '@ant-design/icons';
 import { Container, Breadcrumb } from 'react-bootstrap';
 import { Divider, Button, Modal, Form, DatePicker } from 'antd';
 import { showConfirm } from '../../components/ConfirmAcao';
 import { notificarErro, notificarSucesso } from '../../components/Notificacao';
-import { getKeyUsuarioLogado, isClienteLogado} from '../../../service/usuario';
 import FooterButtons from '../../components/FooterButtons';
 import api from '../../../service/api';
-import {useHistory} from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
+import { useUsuarioContext } from '../../../context/UsuarioContext';
 const { Item } = Breadcrumb;
 
 
@@ -21,21 +21,14 @@ function Pedidos() {
     const [data, setData] = useState('');
     const [dateString, setDateString] = useState('');
     const [pedido, setPedido] = useState({});
+
+    const { getKeyUsuarioLogado, isClienteLogado, isFuncionarioLogado } = useUsuarioContext();
+
+    console.log(isFuncionarioLogado());
+    console.log(isClienteLogado());
+    console.log(getKeyUsuarioLogado());
+
     const history = useHistory();
-
-    const [clienteLogado, setClienteLogado] = useState(false);
-    const [funcionarioLogado, setFuncionarioLogado] = useState(false);
-
-    useEffect(() => {
-        const verificarUsuarioLogado = async () => {
-            const clienteLogado = await isClienteLogado();
-            setClienteLogado(clienteLogado);
-            setFuncionarioLogado(!clienteLogado);
-        }
-        verificarUsuarioLogado();
-    }, []);
-
-   
 
     const buscarPedidos = async () => {
         const { data } = await api.get('/pedido', { params: { keyUsuario: getKeyUsuarioLogado() } });
@@ -69,16 +62,16 @@ function Pedidos() {
                         }
                     />
                 }
-                {(record.status === 'FINALIZADO' && clienteLogado) &&
+                {(record.status === 'FINALIZADO' && isClienteLogado()) &&
                     <Button
                         type='primary'
-                        style={{ margin: '1px'}}
+                        style={{ margin: '1px' }}
                         title='Repetir Pedido'
                         icon={<ReloadOutlined />}
                         onClick={_ => { repetirPedido(record) }}
                     />
                 }
-                {(record.status === 'REALIZADO' && funcionarioLogado) &&
+                {(record.status === 'REALIZADO' && isFuncionarioLogado()) &&
                     <Button
                         type='primary'
                         style={{ margin: '1px' }}
@@ -160,10 +153,10 @@ function Pedidos() {
         const dataSelecionada = new Date(date).getTime();
         const dataAtual = new Date().getTime();
         if (dataSelecionada < dataAtual) {
-            if(dataSelecionada === 0){
+            if (dataSelecionada === 0) {
                 setData('');
                 setDateString('');
-            }else{
+            } else {
                 notificarErro('Data Inválida.');
             }
         } else {
@@ -174,22 +167,24 @@ function Pedidos() {
 
     const handlerCadastrar = () => {
         history.push({
-            pathname:'/perfilPedidos',
-            search:'?cadastro=1' 
+            pathname: '/perfilPedidos',
+            search: '?cadastro=1'
         });
     }
 
     const handlerVisualizar = (key) => {
         history.push({
-            pathname:'/perfilPedidos',
-            search:`?cadastro=0&key=${key}` 
+            pathname: '/perfilPedidos',
+            search: `?cadastro=0&key=${key}`
         });
     }
 
     return (
         <div>
             <Breadcrumb>
-                <Item href="/">Principal</Item>
+                <Item >
+                    <Link className='link' to='/pedidos'>Principal</Link>
+                </Item>
                 <Item active>Pedidos</Item>
             </Breadcrumb>
             <Container>
@@ -197,7 +192,7 @@ function Pedidos() {
                 <Divider />
                 <TabelaPedidos getData={buscarPedidos} acoes={acoes} handlerUpdateTable={handlerUpdateTable} />
                 <Divider />
-                <FooterButtons label1='Cadastrar' label2='Voltar' callback1={handlerCadastrar} callback2={history.goBack} visible1={clienteLogado} visible2={false}/>
+                <FooterButtons label1='Cadastrar' label2='Voltar' callback1={handlerCadastrar} callback2={history.goBack} visible1={isClienteLogado()} visible2={false} />
             </Container>
             <Modal
                 title="Data do Pedido"

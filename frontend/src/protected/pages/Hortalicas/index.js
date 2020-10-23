@@ -1,43 +1,37 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Breadcrumb, Container } from 'react-bootstrap';
 import Titulo from '../../components/Titulo';
 import TabelaHortalicas from '../../components/TabelaHortalicas';
 import { showConfirm } from '../../components/ConfirmAcao';
 import { notificarSucesso, notificarErro } from '../../components/Notificacao';
-import { useHistory } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { DeleteOutlined, EditOutlined, SmileOutlined } from '@ant-design/icons';
-import {isClienteLogado, getKeyUsuarioLogado} from '../../../service/usuario';
 import api from '../../../service/api';
 
 import { Divider, Button, Modal, Rate} from 'antd';
+import { useUsuarioContext } from '../../../context/UsuarioContext';
 
 const { Item } = Breadcrumb;
 
 function Hortalicas() {
-
-    const [clienteLogado, setClienteLogado] = useState(false);
-    const [funcionarioLogado, setFuncionarioLogado] = useState(false);
 
     const [keyHortalica, setKeyHortalica] = useState('');
     const [modalVisible, setModalVisible] = useState(false);
     const [avaliacao, setAvaliacao] = useState(3);
     const desc = ['Só Deus na causa', 'Mais ou menos', 'Normal', 'Boazinha', 'Showww'];
 
-    useEffect(() => {
-        const verificarUsuarioLogado = async () => {
-            const clienteLogado = await isClienteLogado();
-            setClienteLogado(clienteLogado);
-            setFuncionarioLogado(!clienteLogado);
-        }
-        verificarUsuarioLogado();
-    }, []);
-
     const history = useHistory();
 
     const [handleUpdateTable, setHandleUpdateTable] = useState(false);
 
+    const {isClienteLogado, getKeyUsuarioLogado, isFuncionarioLogado} = useUsuarioContext();
+
+    console.log(isFuncionarioLogado());
+    console.log(isClienteLogado());
+    console.log(getKeyUsuarioLogado());
+
     const carregaHortalicas = async () => {
-        const keyUsuario = await getKeyUsuarioLogado();
+        const keyUsuario = getKeyUsuarioLogado();
         const { data } = await api.get('/hortalica',{params:{keyUsuario}});
         return data;
     }
@@ -87,7 +81,7 @@ function Hortalicas() {
         key: 'acoes',
         render: (_, record) => (
             <span>
-                {funcionarioLogado &&
+                {isFuncionarioLogado() &&
                     <div>
                         <Button
                             title={'Editar hortaliça'}
@@ -115,7 +109,7 @@ function Hortalicas() {
                         />
                     </div>
                 }
-                {clienteLogado &&
+                {isClienteLogado() &&
                     <Button
                         type='primary'
                         style={{ marginLeft: '2px' }}
@@ -138,7 +132,9 @@ function Hortalicas() {
     return (
         <div>
             <Breadcrumb>
-                <Item href="/">Principal</Item>
+                <Item >
+                    <Link className='link' to='/pedidos'>Principal</Link>
+                </Item>
                 <Item active>Hortaliças</Item>
             </Breadcrumb>
             <Container>
@@ -146,8 +142,10 @@ function Hortalicas() {
                 <Divider />
                 <TabelaHortalicas getData={carregaHortalicas} acoes={acoes} handleUpdateTable />
                 <Divider />
-                {funcionarioLogado &&
-                    <Button type='primary' href='/perfilHortalica'>Cadastrar</Button>
+                {isFuncionarioLogado() &&
+                    <Button type='primary' >
+                        <Link className='link' to='/perfilHortalica'>Cadastrar</Link>
+                    </Button>
                 }
             
             <Modal

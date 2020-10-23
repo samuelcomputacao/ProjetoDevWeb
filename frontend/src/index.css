@@ -61,3 +61,11 @@ code {
   align-content: center;
   border: #303030 50px;
 }
+
+.link {
+  color: black;
+}
+.link:hover {
+  color: gray;
+}
+
