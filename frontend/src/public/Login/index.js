@@ -2,11 +2,11 @@ import React, { useEffect,useState } from 'react';
 import 'antd/dist/antd.css';
 import { Container } from 'react-bootstrap';
 import { Form, Input, Button, Divider,Modal,Radio } from 'antd';
-import Titulo from './protected/components/Titulo';
-import api from '../src/service/api';
-import { notificarErro } from '../src/protected/components/Notificacao';
+import Titulo from '../../protected/components/Titulo';
+import api from '../../service/api';
+import { notificarErro } from '../../protected/components/Notificacao';
 import { useHistory } from 'react-router-dom';
-import { useUsuarioContext } from './context/UsuarioContext';
+import { useUsuarioContext } from '../../context/UsuarioContext';
 const { Group } = Radio;
 
 const layout = {
@@ -56,7 +56,7 @@ const Login = () => {
             const { cpfCnpj, senha } = values;
             const { data } = await api.get('/login', { params: { cpfCnpj, senha } });
             const { token } = data;
-            setToken(token);
+            await setToken(token);
             history.push('/pedidos');
         } catch (e) {
             notificarErro(e.response.data.mensagem);

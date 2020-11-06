@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Container, Breadcrumb } from 'react-bootstrap';
 import Tabela from '../../components/Tabela';
 import { Modal, Radio, Button, Divider, Form, Input, Select, Row, Col } from 'antd';
@@ -26,11 +26,21 @@ function Usuarios() {
 
     const [filtro, setFiltro] = useState('');
 
-    const { isFuncionarioLogado } = useUsuarioContext();
+    const { isFuncionarioLogado, sair } = useUsuarioContext();
 
     const history = useHistory();
 
     const [form] = Form.useForm();
+
+    useEffect(()=>{
+        const verificaStatusLogin = () => {
+            if(!isFuncionarioLogado()){
+                sair();
+                history.push('/');
+            }
+        }
+        verificaStatusLogin();
+    },[history, isFuncionarioLogado, sair]);
 
     const radioStyle = {
         display: 'block',

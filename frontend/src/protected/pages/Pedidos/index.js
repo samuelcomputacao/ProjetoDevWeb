@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import TabelaPedidos from '../../components/TabelaPedidos';
 import Titulo from '../../components/Titulo';
 import { CloseOutlined, SearchOutlined, ReloadOutlined, CheckOutlined } from '@ant-design/icons';
@@ -22,16 +22,23 @@ function Pedidos() {
     const [dateString, setDateString] = useState('');
     const [pedido, setPedido] = useState({});
 
-    const { getKeyUsuarioLogado, isClienteLogado, isFuncionarioLogado } = useUsuarioContext();
-
-    console.log(isFuncionarioLogado());
-    console.log(isClienteLogado());
-    console.log(getKeyUsuarioLogado());
+    const { getKeyUsuarioLogado, isClienteLogado, isFuncionarioLogado,sair } = useUsuarioContext();
 
     const history = useHistory();
+    const keyUsuario = getKeyUsuarioLogado();
+
+    useEffect(()=>{
+        const verificaStatusLogin = () => {
+            if(!isClienteLogado() && !isFuncionarioLogado()){
+                sair();
+                history.push('/');
+            }
+        }
+        verificaStatusLogin();
+    },[history, isClienteLogado, isFuncionarioLogado, sair]);
 
     const buscarPedidos = async () => {
-        const { data } = await api.get('/pedido', { params: { keyUsuario: getKeyUsuarioLogado() } });
+        const { data } = await api.get('/pedido', { params: { 'keyUsuario': keyUsuario } });
         return data;
 
     }
@@ -77,7 +84,7 @@ function Pedidos() {
                         style={{ margin: '1px' }}
                         title='Aceitar Pedido'
                         icon={<CheckOutlined />}
-                        onClick={_ => { repetirPedido(record) }}
+                        onClick={_ => { showConfirm("Aceitar Pedido", "Deseja aceitar o pedido?",aceitarPedido,record.key) }}
                     />
                 }
             </span>
@@ -86,8 +93,21 @@ function Pedidos() {
 
     const cancelarPedido = async (key) => {
         try {
-            await api.delete(`/pedido/${key}`, { params: { keyUsuario: getKeyUsuarioLogado() } });
+            const keyUsuario = getKeyUsuarioLogado();
+            await api.delete(`/pedido/${key}`, { params: { 'keyUsuario': keyUsuario } });
             notificarSucesso('Pedido cancelado com sucesso!');
+            setHandlerUpdateTable(!handlerUpdateTable);
+        } catch (e) {
+            const { mensagem } = e.response.data;
+            notificarErro(mensagem);
+        }
+    }
+
+    const aceitarPedido = async (key) => {
+        try {
+            const keyUsuario = getKeyUsuarioLogado();
+            await api.put(`/pedido/aceitar/${key}`, { params: { 'keyUsuario': keyUsuario } });
+            notificarSucesso('Pedido aceito com sucesso!');
             setHandlerUpdateTable(!handlerUpdateTable);
         } catch (e) {
             const { mensagem } = e.response.data;
