@@ -47,11 +47,14 @@ function PerfilPedidos({ location }) {
             const params = new URLSearchParams(location.search);
             const tipo = params.get('cadastro');
             const key = params.get('key');
+
+            const keyUsuario = getKeyUsuarioLogado();
+            
             setCadastro(true);
             if (tipo === '0') {
                 setKeyPedido(key);
                 setCadastro(false);
-                const { data } = await api.get(`/pedido/${key}`);
+                const { data } = await api.get(`/pedido/${key}`,{params:{'keyUsuario':keyUsuario}});
                 const ped = data.pedido;
                 setDateString(ped.data);
                 setKeyPedido(key);
@@ -76,7 +79,7 @@ function PerfilPedidos({ location }) {
             }
         }
         verificaParams();
-    }, [location]);
+    }, [getKeyUsuarioLogado, location]);
 
     const acoes = {
         title: 'Inserir',
@@ -250,7 +253,9 @@ function PerfilPedidos({ location }) {
     }
 
     const getHortalicas = async () => {
-        const { data } = await api.get('/hortalica');
+        const keyUsuario = getKeyUsuarioLogado();
+        console.log(keyUsuario);
+        const { data } = await api.get('/hortalica',{params:{'keyUsuario':keyUsuario}});
         return data;
     }
 

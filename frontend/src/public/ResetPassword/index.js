@@ -1,9 +1,9 @@
 import React from 'react';
 import { Container } from 'react-bootstrap';
 import { Form, Input, Button, Divider } from 'antd';
-import Titulo from './protected/components/Titulo';
-import api from '../src/service/api';
-import {notificarErro, notificarSucesso} from '../src/protected/components/Notificacao';
+import Titulo from '../../protected/components/Titulo';
+import api from '../../service/api';
+import {notificarErro, notificarSucesso} from '../../protected/components/Notificacao';
 import {useHistory} from 'react-router-dom';
 
 const layout = {

@@ -47,6 +47,7 @@ module.exports = {
 
     async findById(request,response){
         const {key} = request.params;
+        if((!key||key==='')) return response.status(400).json({"mensagem":"Há inconcistência nos dados"});
         const usuario = await connection('usuario').where('key','=',key).select('*').first();
         if(usuario){
             return response.status(200).json(usuario);
@@ -84,6 +85,7 @@ module.exports = {
 
     async update(request, response){
         const {key} = request.params;
+        if((!key||key==='')) return response.status(400).json({"mensagem":"Há inconcistência nos dados"});
         const {nome, funcao, senha, avatar} = request.body;
         
         if(nome){
@@ -103,6 +105,8 @@ module.exports = {
 
     async delete(request, response){
         const {key} = request.params;
+        if((!key||key==='')) return response.status(400).json({"mensagem":"Há inconcistência nos dados"});
+
         const usuario = await connection('usuario').where('key','=',key).select('key').first();
         if(usuario){
             await connection('usuario').where('key','=',key).delete();

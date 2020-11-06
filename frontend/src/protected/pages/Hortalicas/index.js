@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Breadcrumb, Container } from 'react-bootstrap';
 import Titulo from '../../components/Titulo';
 import TabelaHortalicas from '../../components/TabelaHortalicas';
@@ -15,6 +15,7 @@ const { Item } = Breadcrumb;
 
 function Hortalicas() {
 
+
     const [keyHortalica, setKeyHortalica] = useState('');
     const [modalVisible, setModalVisible] = useState(false);
     const [avaliacao, setAvaliacao] = useState(3);
@@ -24,15 +25,21 @@ function Hortalicas() {
 
     const [handleUpdateTable, setHandleUpdateTable] = useState(false);
 
-    const {isClienteLogado, getKeyUsuarioLogado, isFuncionarioLogado} = useUsuarioContext();
+    const {isClienteLogado, getKeyUsuarioLogado, isFuncionarioLogado,sair} = useUsuarioContext();
 
-    console.log(isFuncionarioLogado());
-    console.log(isClienteLogado());
-    console.log(getKeyUsuarioLogado());
+    useEffect(()=>{
+        const verificaStatusLogin = () => {
+            if(!isClienteLogado() && !isFuncionarioLogado()){
+                sair();
+                history.push('/');
+            }
+        }
+        verificaStatusLogin();
+    },[history, isClienteLogado, isFuncionarioLogado, sair]);
 
     const carregaHortalicas = async () => {
         const keyUsuario = getKeyUsuarioLogado();
-        const { data } = await api.get('/hortalica',{params:{keyUsuario}});
+        const { data } = await api.get('/hortalica',{params:{'keyUsuario':keyUsuario}});
         return data;
     }
 
@@ -61,8 +68,8 @@ function Hortalicas() {
             await api.post(`/hortalica/avaliacao/${keyHortalica}`,{avaliacao},{params:{keyUsuario}});
             closeModal();
             notificarSucesso('Hortaliça Avaliada com sucesso.');
-            setTimeout(()=>{
-                window.location.reload();
+            setTimeout(() => {
+                history.push('/pedidos');
             },500);
         } catch (e) {
             const { mensagem } = e.response.data;
@@ -140,7 +147,7 @@ function Hortalicas() {
             <Container>
                 <Titulo nome='Hortaliças' />
                 <Divider />
-                <TabelaHortalicas getData={carregaHortalicas} acoes={acoes} handleUpdateTable />
+                <TabelaHortalicas getData={carregaHortalicas} acoes={acoes} handleUpdateTable={handleUpdateTable} />
                 <Divider />
                 {isFuncionarioLogado() &&
                     <Button type='primary' >
@@ -154,10 +161,10 @@ function Hortalicas() {
                     onOk={avaliar}
                     onCancel={closeModal}
                     footer={[
-                        <Button key='back' danger type='primary' onClick={closeModal}>
+                        <Button danger type='primary' onClick={closeModal}>
                             Cancelar
                     </Button>,
-                        <Button key='submit' type='primary' onClick={avaliar}>
+                        <Button type='primary' onClick={avaliar}>
                             Confirmar
                     </Button>,
                     ]}

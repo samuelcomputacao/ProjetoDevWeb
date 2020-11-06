@@ -9,14 +9,14 @@ import PerfilHortalica from './protected/pages/Hortalicas/perfil';
 import PerfilPedidos from './protected/pages/Pedidos/perfil';
 import ResetPassword from './resetPassorwod';
 import Menu from './protected/components/Menu';
-import Login from './login';
+import Login from './public/Login';
 function Rotas() {
     return (
         <Router>
             <Menu />
             <Switch>
                 <Route exact path='/' component={Login} />
-                <Route path='/pedidos' component={Pedidos} />
+                <Route path='/pedidos' component={Pedidos}/>
                 <Route path='/usuarios' component={Usuarios} />
                 <Route path='/hortalicas' component={Hortalicas} />
                 <Route path='/perfilHortalica' component={PerfilHortalica} />

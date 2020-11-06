@@ -16,6 +16,10 @@ function FormHortalica({ keyHortalica, atualizar }) {
     const [loadingAtualizar, setLoadingAtualizar] = useState(false);
     const [carregado, setCarregado] = useState(false);
 
+    const handlerCancel = () => {
+        history.push('/hortalicas');
+    }
+
     useEffect(() => {
         async function buscarHortalica() {
             if (atualizar) {
@@ -174,7 +178,7 @@ function FormHortalica({ keyHortalica, atualizar }) {
                         <Button
                             type='danger'
                             htmlType='submit'
-                            href='/hortalicas'
+                            onClick={handlerCancel}
                         >
                             Cancelar
                         </Button>
@@ -247,7 +251,7 @@ function FormHortalica({ keyHortalica, atualizar }) {
                     <Button
                         type='danger'
                         htmlType='submit'
-                        href='hortalicas'
+                        onClick={handlerCancel}
                     >
                         Cancelar
                         </Button>

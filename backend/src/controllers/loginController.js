@@ -1,5 +1,4 @@
 
-const { response, request } = require('express');
 const {getToken,verificaToken}  = require('../service/loginService');
 const connection = require('../database/connection');
 

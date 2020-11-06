@@ -1,11 +1,34 @@
 const connection = require('../database/connection');
 
+async function getMediaAvaliacao(key){
+    const {soma} = await connection('usuario_avaliacao').where('key_hortalica', '=', key).sum('avaliacao',{as:'soma'}).first();
+    const {total} = await connection('usuario_avaliacao').where('key_hortalica', '=', key).count('avaliacao',{as:'total'}).first();
+    return (soma/total);
+}
+
+async function getAvaliacao(keyUsuario,key){
+    const usuario = await connection('usuario').where('key', '=', keyUsuario).select('*').first();
+    let aval = 0;
+    if(usuario.funcao === 'CLIENTE'){
+        const result = await connection('usuario_avaliacao').where('key_usuario', '=', keyUsuario).andWhere('key_hortalica', '=', key).select('avaliacao').first();
+        if (result) {
+            const { avaliacao } = result;
+            aval = avaliacao;
+        }
+    }else{
+        aval = await getMediaAvaliacao(key);
+    }       
+    return aval;
+}
+
+
 module.exports = {
 
     async index(request, response) {
         const { keyUsuario } = request.query;
-        const usuario = await connection('usuario').where('key', '=', keyUsuario).select('*').first();
+        if((!keyUsuario||keyUsuario==='')) return response.status(400).json({"mensagem":"Há inconcistência nos dados"});
         let pedidos = [];
+        const usuario = await connection('usuario').where('key', '=', keyUsuario).select('funcao').first();
         if (usuario.funcao === 'FUNCIONARIO') {
             pedidos = await connection('pedido').join("usuario", "pedido.key_cliente", '=', 'usuario.key').select('pedido.key', 'pedido.data', 'usuario.nome', 'pedido.status');
         } else {
@@ -14,10 +37,21 @@ module.exports = {
         return response.json(pedidos);
     },
 
+    async aceitar(request, response){
+        const { key } = request.params;
+        if(!key) return response.status(400).json({"mensagem":"Há inconcistência nos dados"});
+        const pedido = await connection('pedido').where('key', '=', key).select('*').first();
+        if (pedido){
+            await connection('pedido').update('status','FINALIZADO');
+        }
+        return response.status(200).send();
+    },
+
     async renovar(request, response) {
         const { key } = request.params;
         const { keyUsuario } = request.query;
         const { data } = request.query;
+        if((!keyUsuario||keyUsuario==='') || !key || !data) return response.status(400).json({"mensagem":"Há inconcistência nos dados"});
         const pedidoSalvo = await connection('pedido').where('key', '=', key).select('*').first();
         const usuario = await connection('usuario').where('key', '=', keyUsuario).select('*').first();
         if (pedidoSalvo) {
@@ -48,6 +82,8 @@ module.exports = {
 
     async findById(request, response) {
         const { key } = request.params;
+        const {keyUsuario} = request.query;
+        if((!keyUsuario||keyUsuario==='') || !key) return response.status(400).json({"mensagem":"Há inconcistência nos dados"});
         const pedido = await connection('pedido').where('key', '=', key).select('*').first();
         const cliente = await connection('usuario').where('key', '=', pedido.key_cliente).select('*').first();
         const pedido_hortalica = await connection('pedido_hortalica').where('key_pedido', '=', key).select('*');
@@ -58,6 +94,8 @@ module.exports = {
             const ped_hort = pedido_hortalica[i];
             const quantidade = ped_hort.quantidade;
             const hortalica = await connection('hortalica').where('key', '=', ped_hort.key_hortalica).select('*').first();
+            const avaliacao = await getAvaliacao(keyUsuario,ped_hort.key_hortalica);
+            hortalica.avaliacao = avaliacao;
             hortalicas = [...hortalicas, { ...hortalica, quantidade }];
             i++;
         }
@@ -70,13 +108,14 @@ module.exports = {
                 }
             });
         }
-        return response.status(500).json({ mensagem: 'O pedido não existe.' });
+        return response.status(404).json({ mensagem: 'O pedido não existe.' });
     },
 
     async create(request, response) {
         const { keyUsuario } = request.query;
         const { data, hortalicas } = request.body;
 
+        if((!keyUsuario||keyUsuario==='') || !data || !hortalicas) return response.status(400).json({"mensagem":"Há inconcistência nos dados"});
         const usuario = await connection('usuario').where('key', '=', keyUsuario).select('funcao').first();
         if (usuario.funcao !== 'CLIENTE') {
             return response.status(401).json({ mensagem: 'O Usuário não está permitido a realizar pedidos' });
@@ -107,6 +146,8 @@ module.exports = {
         const { key } = request.params;
         const { keyUsuario } = request.query;
         const { hortalicas } = request.body;
+
+        if((!keyUsuario||keyUsuario==='') || !key || !hortalicas) return response.status(400).json({"mensagem":"Há inconcistência nos dados"});
         const pedido = await connection('pedido').where('key', '=', key).select('*').first();
         if (pedido) {
             if (pedido.status === 'REALIZADO') {
@@ -132,13 +173,15 @@ module.exports = {
                 return response.status(500).json({ mensagem: 'O pedido não pode ser atualizado.' });
             }
         }else{
-            return response.status(500).json({mensagem:'O pedido não existe.'});
+            return response.status(404).json({mensagem:'O pedido não existe.'});
         }
     },
 
     async delete(request, response) {
         const { key } = request.params;
         const { keyUsuario } = request.query;
+
+        if((!keyUsuario||keyUsuario==='') || !key) return response.status(400).json({"mensagem":"Há inconcistência nos dados"});
         const pedido = await connection('pedido').where('key', '=', key).select('*').first();
         if (pedido) {
             const usuario = await connection('usuario').where('key', '=', keyUsuario).select('*').first();
@@ -155,6 +198,6 @@ module.exports = {
                 }
             }
         }
-        return response.status(500).json({ mensagem: 'O pedido não existe.' });
+        return response.status(404).json({ mensagem: 'O pedido não existe.' });
     }
 }
