@@ -14,9 +14,7 @@ function PerfilHortalica({ location }) {
 
     useEffect(() => {
         async function buscarHortalica() {
-            console.log('fora');
             if (location) {
-                console.log('dentro');
                 const params = new URLSearchParams(location.search);
                 const key = params.get('key');
                 if (key) {

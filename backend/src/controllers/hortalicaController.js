@@ -95,7 +95,7 @@ module.exports = {
         const { keyUsuario } = request.query;
         if((!keyUsuario||keyUsuario==='') || (!key || key==='')) return response.status(400).json({"mensagem":"Há inconcistência nos dados"});
         const hortalica = await connection('hortalica').where('key', '=', key).select('*').first();
-        hortalica.avaliacao = await this.getAvaliacao(keyUsuario, hortalica.key);
+        hortalica.avaliacao = await getAvaliacao(keyUsuario, hortalica.key);
         return response.json(hortalica);
     },
 

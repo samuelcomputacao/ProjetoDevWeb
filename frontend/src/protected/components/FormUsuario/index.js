@@ -68,7 +68,7 @@ function FormUsuario({ atualizar, keyUsuario, tipoUsuario }) {
             notificarSucesso('O usuário foi atualizado com sucesso.');
             setloadingAtualizar(false);
             setTimeout(() => {
-                history.push('/usuarios');
+                history.push('/');
             }, 200);
         } catch (e) {
             const { mensagem } = e.response.data;

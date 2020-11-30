@@ -3,6 +3,7 @@ import { Form, Select, InputNumber, Button, Input, Divider } from 'antd';
 import { notificarErro, notificarSucesso } from '../Notificacao';
 import { useHistory } from 'react-router-dom';
 import api from '../../../service/api';
+import { useUsuarioContext } from '../../../context/UsuarioContext';
 
 function FormHortalica({ keyHortalica, atualizar }) {
 
@@ -16,6 +17,8 @@ function FormHortalica({ keyHortalica, atualizar }) {
     const [loadingAtualizar, setLoadingAtualizar] = useState(false);
     const [carregado, setCarregado] = useState(false);
 
+    const {getKeyUsuarioLogado} = useUsuarioContext();
+
     const handlerCancel = () => {
         history.push('/hortalicas');
     }
@@ -25,7 +28,8 @@ function FormHortalica({ keyHortalica, atualizar }) {
             if (atualizar) {
                 if (keyHortalica) {
                     try {
-                        const { data } = await api.get(`/hortalica/${keyHortalica}`)
+                        const keyUsuario = getKeyUsuarioLogado();
+                        const { data } = await api.get(`/hortalica/${keyHortalica}`,{params:{'keyUsuario':keyUsuario}})
                         await setHortalica(data);
                         setCarregado(true);
                     } catch (e) {
@@ -36,7 +40,7 @@ function FormHortalica({ keyHortalica, atualizar }) {
             }
         }
         buscarHortalica();
-    }, [atualizar, keyHortalica]);
+    }, [atualizar, getKeyUsuarioLogado, keyHortalica]);
 
     const onFormLayoutChange = ({ size }) => {
         console.log('formChange');

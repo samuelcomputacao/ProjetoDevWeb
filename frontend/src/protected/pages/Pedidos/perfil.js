@@ -40,7 +40,7 @@ function PerfilPedidos({ location }) {
     const [cadastro, setCadastro] = useState(false);
     const [keyPedido, setKeyPedido] = useState('');
 
-    const { getKeyUsuarioLogado } = useUsuarioContext();
+    const { getKeyUsuarioLogado, isClienteLogado } = useUsuarioContext();
 
     useEffect(() => {
         async function verificaParams() {
@@ -115,6 +115,7 @@ function PerfilPedidos({ location }) {
         key: 'remover',
         render: (_, record) => (
             <span>
+                
                 <Button
                     type='primary'
                     style={{ marginLeft: '2px' }}
@@ -287,7 +288,7 @@ function PerfilPedidos({ location }) {
                     <Divider />
                 </div>}
                 <h2>Pedido</h2>
-                <TabelaHortalicas getData={getPedidos} acoes={acoesPedido} handleUpdateTable />
+                <TabelaHortalicas getData={getPedidos} acoes={(isClienteLogado()?acoesPedido:{})} handleUpdateTable />
                 <Divider />
                 <Form {...layout}>
                     <Form.Item
@@ -302,8 +303,8 @@ function PerfilPedidos({ location }) {
                         {!cadastro && <Input readOnly value={dateString} />}
                     </Form.Item>
                 </Form>
-                {cadastro && <FooterButtons label1='Salvar' label2='Voltar' callback1={salvarPedido} callback2={historico.goBack} />}
-                {!cadastro && <FooterButtons label1='Atualizar' label2='Cancelar' callback1={atualizarPedido} callback2={historico.goBack} />}
+                {cadastro && <FooterButtons label1='Salvar' label2='Voltar' callback1={salvarPedido} callback2={historico.goBack} visible1={isClienteLogado()} visible2={isClienteLogado()}/>}
+                {!cadastro && <FooterButtons label1='Atualizar' label2='Cancelar' callback1={atualizarPedido} callback2={historico.goBack} visible1={isClienteLogado()} visible2={isClienteLogado()}/>}
                 <Modal
                     title="Quantidade"
                     visible={visible}
